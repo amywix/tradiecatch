@@ -283,7 +283,9 @@ export default function CallsScreen() {
         ListEmptyComponent={
           !isLoading ? (
             <View style={styles.emptyState}>
-              <Ionicons name="call-outline" size={48} color={Colors.textTertiary} />
+              <View style={styles.emptyIconBadge}>
+                <Ionicons name="call-outline" size={36} color={Colors.accent} />
+              </View>
               <Text style={styles.emptyTitle}>No missed calls</Text>
               <Text style={styles.emptyText}>Tap + to log a missed call manually</Text>
             </View>
@@ -327,7 +329,7 @@ const styles = StyleSheet.create({
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
   },
   signOutBtn: {
     width: 44,
@@ -551,7 +553,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 100,
-    gap: 12,
+    gap: 14,
+  },
+  emptyIconBadge: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.accentSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyTitle: {
     fontSize: 18,
@@ -562,5 +572,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter_400Regular',
     color: Colors.textSecondary,
+    textAlign: 'center',
+    paddingHorizontal: 40,
   },
 });

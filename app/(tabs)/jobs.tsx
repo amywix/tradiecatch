@@ -341,7 +341,9 @@ export default function JobsScreen() {
         ListEmptyComponent={
           !isLoading ? (
             <View style={styles.emptyState}>
-              <Ionicons name="construct-outline" size={48} color={Colors.textTertiary} />
+              <View style={styles.emptyIconBadge}>
+                <Ionicons name="construct-outline" size={36} color={Colors.accent} />
+              </View>
               <Text style={styles.emptyTitle}>No jobs yet</Text>
               <Text style={styles.emptyText}>Jobs booked from SMS conversations will appear here automatically</Text>
             </View>
@@ -413,6 +415,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 12,
     backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderLight,
   },
   signOutBtn: {
     width: 44,
@@ -447,7 +451,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surfaceSecondary,
   },
   filterBtnActive: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.accent,
   },
   filterText: {
     fontSize: 13,
@@ -603,7 +607,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 100,
-    gap: 12,
+    gap: 14,
+  },
+  emptyIconBadge: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.accentSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyTitle: {
     fontSize: 18,

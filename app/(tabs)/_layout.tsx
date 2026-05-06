@@ -60,10 +60,18 @@ function ClassicTabLayout() {
         tabBarStyle: {
           position: "absolute",
           backgroundColor: isIOS ? "transparent" : isDark ? "#000" : "#fff",
-          borderTopWidth: isWeb ? 1 : 0,
+          borderTopWidth: isWeb ? 0 : 0,
           borderTopColor: isDark ? "#333" : Colors.border,
           elevation: 0,
-          ...(isWeb ? { height: 84 } : {}),
+          ...(isWeb
+            ? {
+                height: 84,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: -2 },
+                shadowOpacity: 0.06,
+                shadowRadius: 12,
+              }
+            : {}),
         },
         tabBarBackground: () =>
           isIOS ? (

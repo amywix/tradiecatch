@@ -16,6 +16,13 @@ const Colors = {
   borderLight: '#F0F1F5',
   white: '#FFFFFF',
   black: '#000000',
+  // Semantic soft tints — use these for badge / pill backgrounds so the colour
+  // stays consistent across screens instead of one-off hex codes.
+  accentSoft: '#FFF1EA',
+  successSoft: '#E8F8ED',
+  warningSoft: '#FFF8E0',
+  dangerSoft: '#FFEEEE',
+  infoSoft: '#E8EEF8',
   light: {
     text: '#1B2838',
     background: '#F5F6FA',
