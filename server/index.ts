@@ -387,6 +387,66 @@ async function bootstrapDefaultUser() {
       await db.update(settings).set(mirroredFields).where(eq(settings.userId, demo.id));
       log('Bootstrap: refreshed demo settings to mirror admin');
     }
+
+    // Mirror admin's missed_calls + jobs into the demo account so the demo
+    // screens always reflect the live activity. Refreshed on every startup:
+    // wipe demo's existing rows, then re-copy admin's. Voicemail audio fields
+    // are blanked out because demo doesn't have admin's Twilio creds and
+    // cannot stream the recording back. Job-to-call links are re-mapped to
+    // the new demo missed_call ids so "View Chat" still works.
+    try {
+      await db.delete(jobs).where(eq(jobs.userId, demo.id));
+      await db.delete(missedCalls).where(eq(missedCalls.userId, demo.id));
+
+      const adminCalls = await db.select().from(missedCalls).where(eq(missedCalls.userId, admin.id));
+      const idMap = new Map<string, string>();
+      for (const c of adminCalls) {
+        const [inserted] = await db.insert(missedCalls).values({
+          userId: demo.id,
+          callerName: c.callerName,
+          phoneNumber: c.phoneNumber,
+          timestamp: c.timestamp,
+          replied: c.replied,
+          repliedAt: c.repliedAt,
+          jobBooked: c.jobBooked,
+          conversationState: c.conversationState,
+          selectedService: c.selectedService,
+          selectedSubOption: c.selectedSubOption,
+          selectedTime: c.selectedTime,
+          jobAddress: c.jobAddress,
+          isUrgent: c.isUrgent,
+          callerEmail: c.callerEmail,
+          conversationLog: c.conversationLog,
+          voicemailData: null,
+          voicemailMimeType: null,
+          voicemailDurationSeconds: c.voicemailDurationSeconds,
+          recordingSid: null,
+        }).returning({ id: missedCalls.id });
+        idMap.set(c.id, inserted.id);
+      }
+
+      const adminJobs = await db.select().from(jobs).where(eq(jobs.userId, admin.id));
+      for (const j of adminJobs) {
+        await db.insert(jobs).values({
+          userId: demo.id,
+          callerName: j.callerName,
+          phoneNumber: j.phoneNumber,
+          jobType: j.jobType,
+          date: j.date,
+          time: j.time,
+          address: j.address,
+          notes: j.notes,
+          email: j.email,
+          status: j.status,
+          createdAt: j.createdAt,
+          missedCallId: j.missedCallId ? (idMap.get(j.missedCallId) ?? null) : null,
+          isUrgent: j.isUrgent,
+        });
+      }
+      log(`Bootstrap: mirrored ${adminCalls.length} call(s) + ${adminJobs.length} job(s) from admin into demo`);
+    } catch (mirrorErr) {
+      console.error('Bootstrap: failed to mirror admin calls/jobs into demo:', mirrorErr);
+    }
   } catch (err) {
     console.error('Bootstrap error:', err);
   }
