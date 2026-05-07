@@ -10,6 +10,7 @@ import Colors from '@/constants/colors';
 import { useData, Job } from '@/lib/data-context';
 import { useAuth } from '@/lib/auth-context';
 import { formatDate, getInitials, getAvatarColor, confirmAction } from '@/lib/helpers';
+import { Greeting, KpiRow, KpiTile, SectionTitle } from '@/components/Dashboard';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   pending: { label: 'Pending', color: Colors.warning, bg: '#FFF8E0' },
@@ -212,11 +213,16 @@ export default function JobsScreen() {
       async () => { await logout(); },
     );
   }, [logout]);
-  const { jobs, updateExistingJob, removeJob, refreshAll, isLoading } = useData();
+  const { jobs, updateExistingJob, removeJob, refreshAll, isLoading, settings } = useData();
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'completed'>('all');
 
   const filteredJobs = filter === 'all' ? jobs : jobs.filter(j => j.status === filter);
+
+  const pendingCount = jobs.filter(j => j.status === 'pending').length;
+  const confirmedCount = jobs.filter(j => j.status === 'confirmed').length;
+  const completedCount = jobs.filter(j => j.status === 'completed').length;
+  const urgentCount = jobs.filter(j => j.isUrgent && j.status !== 'completed' && j.status !== 'cancelled').length;
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -298,31 +304,14 @@ export default function JobsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: (Platform.OS === 'web' ? webTopInset : insets.top) + 12 }]}>
+      <View style={[styles.header, { paddingTop: (Platform.OS === 'web' ? webTopInset : insets.top) + 10 }]}>
         <View style={{ flex: 1 }}>
+          <Text style={styles.headerEyebrow}>Schedule</Text>
           <Text style={styles.headerTitle}>Jobs</Text>
-          <Text style={styles.headerSubtitle}>{jobs.length} total</Text>
         </View>
         <Pressable onPress={signOut} style={styles.signOutBtn} hitSlop={8} testID="signout-btn">
           <Feather name="log-out" size={20} color={Colors.textSecondary} />
         </Pressable>
-      </View>
-
-      <View style={styles.filterRow}>
-        {filters.map(f => (
-          <Pressable
-            key={f.key}
-            style={[styles.filterBtn, filter === f.key && styles.filterBtnActive]}
-            onPress={() => {
-              Haptics.selectionAsync();
-              setFilter(f.key);
-            }}
-          >
-            <Text style={[styles.filterText, filter === f.key && styles.filterTextActive]}>
-              {f.label}
-            </Text>
-          </Pressable>
-        ))}
       </View>
 
       <FlatList
@@ -337,6 +326,46 @@ export default function JobsScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />
+        }
+        ListHeaderComponent={
+          <View>
+            <Greeting businessName={settings.businessName || 'TradieCatch'} />
+            <KpiRow>
+              <KpiTile label="Pending" value={pendingCount} icon="time-outline" tone="warning" />
+              <KpiTile label="Confirmed" value={confirmedCount} icon="checkmark-circle-outline" tone="success" />
+              <KpiTile label="Urgent" value={urgentCount} icon="flash-outline" tone={urgentCount > 0 ? 'accent' : 'neutral'} />
+            </KpiRow>
+            <View style={styles.segment}>
+              {filters.map((f, i) => (
+                <Pressable
+                  key={f.key}
+                  style={[
+                    styles.segmentBtn,
+                    filter === f.key && styles.segmentBtnActive,
+                    i === 0 && { borderTopLeftRadius: 10, borderBottomLeftRadius: 10 },
+                    i === filters.length - 1 && { borderTopRightRadius: 10, borderBottomRightRadius: 10 },
+                  ]}
+                  onPress={() => {
+                    Haptics.selectionAsync();
+                    setFilter(f.key);
+                  }}
+                >
+                  <Text style={[styles.segmentText, filter === f.key && styles.segmentTextActive]}>
+                    {f.label}
+                  </Text>
+                  {f.key !== 'all' && (
+                    <Text style={[
+                      styles.segmentCount,
+                      filter === f.key && styles.segmentCountActive,
+                    ]}>
+                      {f.key === 'pending' ? pendingCount : f.key === 'confirmed' ? confirmedCount : completedCount}
+                    </Text>
+                  )}
+                </Pressable>
+              ))}
+            </View>
+            {filteredJobs.length > 0 && <SectionTitle title={filter === 'all' ? 'All jobs' : filters.find(x => x.key === filter)?.label || ''} />}
+          </View>
         }
         ListEmptyComponent={
           !isLoading ? (
@@ -411,68 +440,92 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingBottom: 14,
     backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderLight,
   },
   signOutBtn: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerEyebrow: {
+    fontSize: 11,
+    fontFamily: 'Inter_600SemiBold',
+    color: Colors.accent,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 2,
+  },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontFamily: 'Inter_700Bold',
     color: Colors.text,
+    letterSpacing: -0.3,
   },
-  headerSubtitle: {
-    fontSize: 14,
-    fontFamily: 'Inter_500Medium',
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-  filterRow: {
+  segment: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
-  },
-  filterBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
+    marginHorizontal: 16,
+    marginBottom: 16,
     backgroundColor: Colors.surfaceSecondary,
+    borderRadius: 10,
+    padding: 3,
   },
-  filterBtnActive: {
-    backgroundColor: Colors.accent,
+  segmentBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
-  filterText: {
+  segmentBtnActive: {
+    backgroundColor: Colors.surface,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  segmentText: {
     fontSize: 13,
     fontFamily: 'Inter_500Medium',
     color: Colors.textSecondary,
   },
-  filterTextActive: {
-    color: Colors.white,
+  segmentTextActive: {
+    color: Colors.text,
+    fontFamily: 'Inter_600SemiBold',
+  },
+  segmentCount: {
+    fontSize: 11,
+    fontFamily: 'Inter_600SemiBold',
+    color: Colors.textTertiary,
+    backgroundColor: 'transparent',
+  },
+  segmentCountActive: {
+    color: Colors.accent,
   },
   listContent: {
-    padding: 16,
+    paddingBottom: 16,
     gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 0,
   },
   jobCard: {
     backgroundColor: Colors.surface,
-    borderRadius: 16,
+    borderRadius: 14,
     padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
     elevation: 1,
   },
   jobRow: {

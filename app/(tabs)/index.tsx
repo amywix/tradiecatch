@@ -11,6 +11,7 @@ import { apiRequest, getApiUrl } from '@/lib/query-client';
 import { useData, MissedCall } from '@/lib/data-context';
 import { useAuth } from '@/lib/auth-context';
 import { formatTimeAgo, formatTime, getInitials, getAvatarColor, confirmAction } from '@/lib/helpers';
+import { Greeting, KpiRow, KpiTile, SectionTitle } from '@/components/Dashboard';
 
 const STATE_LABELS: Record<string, string> = {
   none: '',
@@ -182,11 +183,16 @@ function useSignOut() {
 export default function CallsScreen() {
   const insets = useSafeAreaInsets();
   const signOut = useSignOut();
-  const { missedCalls, removeCall, refreshAll, isLoading, sendAutoSms } = useData();
+  const { missedCalls, removeCall, refreshAll, isLoading, sendAutoSms, settings } = useData();
   const [refreshing, setRefreshing] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
 
   const unrepliedCount = missedCalls.filter(c => !c.replied).length;
+
+  const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
+  const todayCalls = missedCalls.filter(c => new Date(c.timestamp).getTime() >= startOfToday.getTime());
+  const repliedToday = todayCalls.filter(c => c.replied).length;
+  const bookedToday = todayCalls.filter(c => c.jobBooked).length;
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -250,16 +256,15 @@ export default function CallsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: (Platform.OS === 'web' ? webTopInset : insets.top) + 12 }]}>
-        <View>
+      <View style={[styles.header, { paddingTop: (Platform.OS === 'web' ? webTopInset : insets.top) + 10 }]}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.headerEyebrow}>Inbox</Text>
           <Text style={styles.headerTitle}>Missed Calls</Text>
-          {unrepliedCount > 0 && (
-            <Text style={styles.headerSubtitle}>{unrepliedCount} unreplied</Text>
-          )}
         </View>
         <View style={styles.headerActions}>
           <Pressable onPress={handleAddCall} style={styles.addBtn} hitSlop={8} testID="add-call-btn">
-            <Ionicons name="add" size={28} color={Colors.accent} />
+            <Ionicons name="add" size={20} color={Colors.white} />
+            <Text style={styles.addBtnText}>New</Text>
           </Pressable>
           <Pressable onPress={signOut} style={styles.signOutBtn} hitSlop={8} testID="signout-btn">
             <Feather name="log-out" size={20} color={Colors.textSecondary} />
@@ -279,6 +284,19 @@ export default function CallsScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />
+        }
+        ListHeaderComponent={
+          <View>
+            <Greeting businessName={settings.businessName || 'TradieCatch'} />
+            <KpiRow>
+              <KpiTile label="Today's calls" value={todayCalls.length} icon="call-outline" tone="info" />
+              <KpiTile label="Unreplied" value={unrepliedCount} icon="alert-circle-outline" tone={unrepliedCount > 0 ? 'warning' : 'success'} />
+              <KpiTile label="Booked today" value={bookedToday} icon="checkmark-done-outline" tone="accent" />
+            </KpiRow>
+            {missedCalls.length > 0 && (
+              <SectionTitle title="Recent activity" />
+            )}
+          </View>
         }
         ListEmptyComponent={
           !isLoading ? (
@@ -308,55 +326,74 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingBottom: 14,
     backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderLight,
   },
+  headerEyebrow: {
+    fontSize: 11,
+    fontFamily: 'Inter_600SemiBold',
+    color: Colors.accent,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 2,
+  },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontFamily: 'Inter_700Bold',
     color: Colors.text,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    fontFamily: 'Inter_500Medium',
-    color: Colors.danger,
-    marginTop: 2,
+    letterSpacing: -0.3,
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   },
   signOutBtn: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: 4,
   },
   addBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.surfaceSecondary,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: Colors.accent,
+    shadowColor: Colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  addBtnText: {
+    fontSize: 13,
+    fontFamily: 'Inter_600SemiBold',
+    color: Colors.white,
   },
   listContent: {
-    padding: 16,
+    paddingBottom: 16,
     gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   callCard: {
     backgroundColor: Colors.surface,
-    borderRadius: 16,
+    borderRadius: 14,
     padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
     elevation: 1,
   },
   callRow: {
