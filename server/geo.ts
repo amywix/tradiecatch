@@ -20,14 +20,33 @@ function normalizeQuery(q: string): string {
   return q.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-export async function geocodeAddress(query: string): Promise<GeocodeResult | null> {
+export async function geocodeAddress(query: string, near?: LatLng | null): Promise<GeocodeResult | null> {
   const trimmed = (query || "").trim();
   if (!trimmed) return null;
 
-  const key = normalizeQuery(trimmed);
+  // Cache key includes the bias point so two tradies with different bases
+  // don't share a cached "Stafford" that's miles away from one of them.
+  const key = near
+    ? `${normalizeQuery(trimmed)}|${near.lat.toFixed(2)},${near.lng.toFixed(2)}`
+    : normalizeQuery(trimmed);
   if (cache.has(key)) return cache.get(key)!;
 
-  const url = `${NOMINATIM_URL}?format=json&limit=1&countrycodes=au&q=${encodeURIComponent(trimmed)}`;
+  // When we know the tradie's base, ask Nominatim to PREFER results inside
+  // a ~220km box around them (bounded=0 means "prefer, don't restrict").
+  // This stops "123 street street Stafford" matching a Stafford Street in
+  // Sydney when the tradie is in Brisbane.
+  let viewboxParam = "";
+  if (near) {
+    const dLat = 2; // ~220km
+    const dLng = 2;
+    const left = near.lng - dLng;
+    const right = near.lng + dLng;
+    const top = near.lat + dLat;
+    const bottom = near.lat - dLat;
+    viewboxParam = `&viewbox=${left},${top},${right},${bottom}&bounded=0`;
+  }
+
+  const url = `${NOMINATIM_URL}?format=json&limit=5&countrycodes=au${viewboxParam}&q=${encodeURIComponent(trimmed)}`;
 
   try {
     const res = await fetch(url, {
@@ -46,11 +65,24 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
       cache.set(key, null);
       return null;
     }
-    const r = arr[0];
+    // If we have a base, pick the candidate physically closest to it.
+    // Nominatim sorts by importance, which can rank a famous "Stafford Street, Sydney"
+    // above the local Stafford suburb in Brisbane.
+    let chosen = arr[0];
+    if (near) {
+      let best = Infinity;
+      for (const cand of arr) {
+        const d = haversineKm(near, { lat: parseFloat(cand.lat), lng: parseFloat(cand.lon) });
+        if (d < best) {
+          best = d;
+          chosen = cand;
+        }
+      }
+    }
     const result: GeocodeResult = {
-      lat: parseFloat(r.lat),
-      lng: parseFloat(r.lon),
-      displayName: r.display_name,
+      lat: parseFloat(chosen.lat),
+      lng: parseFloat(chosen.lon),
+      displayName: chosen.display_name,
     };
     cache.set(key, result);
     return result;
@@ -95,7 +127,7 @@ export async function checkServiceArea(userId: string, customerAddress: string):
   }
 
   const base: LatLng = { lat: baseLat, lng: baseLng };
-  const customer = await geocodeAddress(customerAddress);
+  const customer = await geocodeAddress(customerAddress, base);
 
   if (!customer) {
     return { configured: true, geocoded: false, within: true, distanceKm: null, radiusKm, customer: null, base };

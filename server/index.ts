@@ -185,15 +185,21 @@ function configureExpoAndLanding(app: express.Application) {
   // social tags by default, which Lighthouse flags. Injecting here means
   // the next `expo export` doesn't wipe them.
   const SEO_DESCRIPTION = "TradieCatch helps Aussie tradies — especially electricians — never miss a job. Auto-reply to missed calls, capture jobs over SMS, and book work straight into your calendar.";
+  function safeHostUrl(proto: string, host: string): string {
+    // Only allow hostname-safe chars + optional :port. Anything else → empty.
+    const clean = (host || "").match(/^[a-zA-Z0-9.\-]+(:\d+)?$/) ? host : "";
+    return clean ? `${proto}://${clean}` : "";
+  }
   function injectSeoMeta(html: string, baseUrl: string): string {
     if (html.includes('name="description"')) return html;
+    const safeUrl = baseUrl.replace(/[<>"']/g, "");
     const tags = [
       `<meta name="description" content="${SEO_DESCRIPTION}" />`,
       `<meta name="robots" content="index, follow" />`,
       `<meta property="og:title" content="TradieCatch — Never miss a job" />`,
       `<meta property="og:description" content="${SEO_DESCRIPTION}" />`,
       `<meta property="og:type" content="website" />`,
-      `<meta property="og:url" content="${baseUrl}" />`,
+      `<meta property="og:url" content="${safeUrl}" />`,
       `<meta name="twitter:card" content="summary" />`,
       `<meta name="twitter:title" content="TradieCatch — Never miss a job" />`,
       `<meta name="twitter:description" content="${SEO_DESCRIPTION}" />`,
@@ -204,9 +210,7 @@ function configureExpoAndLanding(app: express.Application) {
   // Plain-text robots.txt served before the SPA catch-all so Lighthouse
   // (and crawlers) get a valid robots file instead of HTML.
   app.get("/robots.txt", (req: Request, res: Response) => {
-    const host = req.get("host") || "";
-    const proto = req.protocol || "https";
-    const base = `${proto}://${host}`;
+    const base = safeHostUrl(req.protocol || "https", req.get("host") || "");
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.send(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${base}/sitemap.xml\n`);
   });
@@ -231,8 +235,7 @@ function configureExpoAndLanding(app: express.Application) {
     if (req.path === "/" && hasWebBuild) {
       try {
         const html = fs.readFileSync(webBuildPath, "utf-8");
-        const proto = req.protocol || "https";
-        const baseUrl = `${proto}://${req.get("host") || ""}`;
+        const baseUrl = safeHostUrl(req.protocol || "https", req.get("host") || "");
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         return res.send(injectSeoMeta(html, baseUrl));
       } catch {
@@ -267,8 +270,7 @@ function configureExpoAndLanding(app: express.Application) {
     if (fs.existsSync(webIndex)) {
       try {
         const html = fs.readFileSync(webIndex, "utf-8");
-        const proto = req.protocol || "https";
-        const baseUrl = `${proto}://${req.get("host") || ""}`;
+        const baseUrl = safeHostUrl(req.protocol || "https", req.get("host") || "");
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         return res.send(injectSeoMeta(html, baseUrl));
       } catch {

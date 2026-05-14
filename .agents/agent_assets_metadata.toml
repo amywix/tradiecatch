@@ -12,3 +12,9 @@ id = "-8z1vQqzZq1_6EkIYIVGj"
 uri = "file://exports/TradieCatch-User-Manual.pdf"
 type = "pdf"
 title = "TradieCatch — User Manual (PDF)"
+
+[[outputs]]
+id = "cywguzLZTN5CwjTR47INW"
+uri = "file://tradiecatch-screenshots.zip"
+type = "unspecified"
+title = "TradieCatch screenshots (zip)"
