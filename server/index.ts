@@ -180,6 +180,37 @@ function configureExpoAndLanding(app: express.Application) {
 
   log("Serving static Expo files with dynamic manifest routing");
 
+  // SEO meta tags injected into the Expo web index.html on the fly.
+  // Expo's generated index.html has no <meta name="description"> or
+  // social tags by default, which Lighthouse flags. Injecting here means
+  // the next `expo export` doesn't wipe them.
+  const SEO_DESCRIPTION = "TradieCatch helps Aussie tradies — especially electricians — never miss a job. Auto-reply to missed calls, capture jobs over SMS, and book work straight into your calendar.";
+  function injectSeoMeta(html: string, baseUrl: string): string {
+    if (html.includes('name="description"')) return html;
+    const tags = [
+      `<meta name="description" content="${SEO_DESCRIPTION}" />`,
+      `<meta name="robots" content="index, follow" />`,
+      `<meta property="og:title" content="TradieCatch — Never miss a job" />`,
+      `<meta property="og:description" content="${SEO_DESCRIPTION}" />`,
+      `<meta property="og:type" content="website" />`,
+      `<meta property="og:url" content="${baseUrl}" />`,
+      `<meta name="twitter:card" content="summary" />`,
+      `<meta name="twitter:title" content="TradieCatch — Never miss a job" />`,
+      `<meta name="twitter:description" content="${SEO_DESCRIPTION}" />`,
+    ].join("\n    ");
+    return html.replace("<head>", `<head>\n    ${tags}`);
+  }
+
+  // Plain-text robots.txt served before the SPA catch-all so Lighthouse
+  // (and crawlers) get a valid robots file instead of HTML.
+  app.get("/robots.txt", (req: Request, res: Response) => {
+    const host = req.get("host") || "";
+    const proto = req.protocol || "https";
+    const base = `${proto}://${host}`;
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.send(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${base}/sitemap.xml\n`);
+  });
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.path.startsWith("/api")) {
       return next();
@@ -198,7 +229,15 @@ function configureExpoAndLanding(app: express.Application) {
     const hasWebBuild = fs.existsSync(webBuildPath);
 
     if (req.path === "/" && hasWebBuild) {
-      return res.sendFile(webBuildPath);
+      try {
+        const html = fs.readFileSync(webBuildPath, "utf-8");
+        const proto = req.protocol || "https";
+        const baseUrl = `${proto}://${req.get("host") || ""}`;
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.send(injectSeoMeta(html, baseUrl));
+      } catch {
+        return res.sendFile(webBuildPath);
+      }
     }
 
     if (req.path === "/") {
