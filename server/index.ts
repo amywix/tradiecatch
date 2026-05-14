@@ -366,12 +366,16 @@ async function bootstrapDefaultUser() {
       // SECURITY: never mirror real Twilio credentials into the demo account.
       // The demo password (`demo`/`123`) is intentionally well-known so anyone
       // can poke around; copying the operator's SID + auth token in here would
-      // hand those creds to anyone who logs in as demo. The phone number is
-      // safe to mirror (it's already public on outbound SMS) so the demo
-      // Settings page can still display "Your business phone number".
+      // hand those creds to anyone who logs in as demo.
+      // ROUTING: also leave twilioPhoneNumber blank on demo. If demo holds the
+      // same number as admin, inbound Twilio webhooks (which look up the owner
+      // by `To` number) can resolve to demo instead of admin and then SMS
+      // sends fail with Twilio "Authenticate" because demo has no creds. Demo
+      // is read-only and never receives real inbound calls, so it doesn't
+      // need a phone number on its settings row.
       twilioAccountSid: '',
       twilioAuthToken: '',
-      twilioPhoneNumber: adminSettings?.twilioPhoneNumber ?? twilioPhone,
+      twilioPhoneNumber: '',
       missedCallVoiceMessage: adminSettings?.missedCallVoiceMessage ?? null,
       voiceRecordingData: adminSettings?.voiceRecordingData ?? null,
       voiceRecordingMimeType: adminSettings?.voiceRecordingMimeType ?? null,
