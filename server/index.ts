@@ -265,7 +265,15 @@ function configureExpoAndLanding(app: express.Application) {
     if (req.path.startsWith("/api")) return next();
     const webIndex = path.resolve(process.cwd(), "web-build", "index.html");
     if (fs.existsSync(webIndex)) {
-      return res.sendFile(webIndex);
+      try {
+        const html = fs.readFileSync(webIndex, "utf-8");
+        const proto = req.protocol || "https";
+        const baseUrl = `${proto}://${req.get("host") || ""}`;
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.send(injectSeoMeta(html, baseUrl));
+      } catch {
+        return res.sendFile(webIndex);
+      }
     }
     next();
   });
