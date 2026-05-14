@@ -6,7 +6,7 @@ import { getStripeSync } from './stripeClient';
 import { WebhookHandlers } from './webhookHandlers';
 import { db } from './db';
 import { users, settings, missedCalls, jobs, DEFAULT_SERVICES } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import * as fs from "fs";
 import * as path from "path";
@@ -399,6 +399,43 @@ async function bootstrapDefaultUser() {
     // cannot stream the recording back. Job-to-call links are re-mapped to
     // the new demo missed_call ids so "View Chat" still works.
     try {
+      // One-shot rescue: any inbound calls/jobs that landed on demo by mistake
+      // (back when demo's settings row also held the admin's twilio number)
+      // get reassigned to admin BEFORE we wipe demo's mirror data. Without
+      // this, the wipe below would permanently delete real customer calls.
+      // Skip rows that already exist on admin at the same phone+timestamp so
+      // we don't create duplicates if this runs more than once.
+      const orphanCalls = await db.select().from(missedCalls).where(eq(missedCalls.userId, demo.id));
+      let rescued = 0;
+      for (const c of orphanCalls) {
+        const dup = await db.select().from(missedCalls).where(and(
+          eq(missedCalls.userId, admin.id),
+          eq(missedCalls.phoneNumber, c.phoneNumber),
+          eq(missedCalls.timestamp, c.timestamp),
+        ));
+        if (dup.length === 0) {
+          await db.update(missedCalls).set({ userId: admin.id }).where(eq(missedCalls.id, c.id));
+          rescued++;
+        }
+      }
+      const orphanJobs = await db.select().from(jobs).where(eq(jobs.userId, demo.id));
+      let jobsRescued = 0;
+      for (const j of orphanJobs) {
+        const dup = await db.select().from(jobs).where(and(
+          eq(jobs.userId, admin.id),
+          eq(jobs.phoneNumber, j.phoneNumber),
+          eq(jobs.date, j.date),
+          eq(jobs.time, j.time),
+        ));
+        if (dup.length === 0) {
+          await db.update(jobs).set({ userId: admin.id }).where(eq(jobs.id, j.id));
+          jobsRescued++;
+        }
+      }
+      if (rescued > 0 || jobsRescued > 0) {
+        log(`Bootstrap: rescued ${rescued} call(s) + ${jobsRescued} job(s) from demo back to admin`);
+      }
+
       await db.delete(jobs).where(eq(jobs.userId, demo.id));
       await db.delete(missedCalls).where(eq(missedCalls.userId, demo.id));
 
