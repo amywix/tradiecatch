@@ -1748,16 +1748,12 @@ export default function SettingsScreen() {
             <Pressable
               style={styles.logoutRow}
               onPress={() => {
-                Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: 'Sign Out',
-                    style: 'destructive',
-                    onPress: async () => {
-                      await logout();
-                    },
-                  },
-                ]);
+                confirmAction(
+                  'Sign Out',
+                  'Are you sure you want to sign out?',
+                  'Sign Out',
+                  async () => { await logout(); },
+                );
               }}
               testID="logout-btn"
             >
