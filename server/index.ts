@@ -542,6 +542,81 @@ async function bootstrapDefaultUser() {
   }
 }
 
+// Re-mirror admin's calls + jobs into the demo account. Used both at
+// bootstrap and at runtime so brand-new missed calls show up in demo
+// without waiting for a backend restart. Cheap (tiny tables) and
+// debounced via syncDemoFromAdminSoon() so a burst of Twilio webhooks
+// only triggers one resync.
+async function syncDemoFromAdmin(): Promise<void> {
+  try {
+    const admin = (await db.select().from(users).where(eq(users.email, 'admin@tradiecatch.com')))[0];
+    const demo = (await db.select().from(users).where(eq(users.email, 'demo')))[0];
+    if (!admin || !demo) return;
+
+    await db.delete(jobs).where(eq(jobs.userId, demo.id));
+    await db.delete(missedCalls).where(eq(missedCalls.userId, demo.id));
+
+    const adminCalls = await db.select().from(missedCalls).where(eq(missedCalls.userId, admin.id));
+    const idMap = new Map<string, string>();
+    for (const c of adminCalls) {
+      const [inserted] = await db.insert(missedCalls).values({
+        userId: demo.id,
+        callerName: c.callerName,
+        phoneNumber: c.phoneNumber,
+        timestamp: c.timestamp,
+        replied: c.replied,
+        repliedAt: c.repliedAt,
+        jobBooked: c.jobBooked,
+        conversationState: c.conversationState,
+        selectedService: c.selectedService,
+        selectedSubOption: c.selectedSubOption,
+        selectedTime: c.selectedTime,
+        jobAddress: c.jobAddress,
+        isUrgent: c.isUrgent,
+        callerEmail: c.callerEmail,
+        conversationLog: c.conversationLog,
+        voicemailData: null,
+        voicemailMimeType: null,
+        voicemailDurationSeconds: c.voicemailDurationSeconds,
+        recordingSid: null,
+      }).returning({ id: missedCalls.id });
+      idMap.set(c.id, inserted.id);
+    }
+
+    const adminJobs = await db.select().from(jobs).where(eq(jobs.userId, admin.id));
+    for (const j of adminJobs) {
+      await db.insert(jobs).values({
+        userId: demo.id,
+        callerName: j.callerName,
+        phoneNumber: j.phoneNumber,
+        jobType: j.jobType,
+        date: j.date,
+        time: j.time,
+        address: j.address,
+        notes: j.notes,
+        email: j.email,
+        status: j.status,
+        createdAt: j.createdAt,
+        missedCallId: j.missedCallId ? (idMap.get(j.missedCallId) ?? null) : null,
+        isUrgent: j.isUrgent,
+      });
+    }
+  } catch (err) {
+    console.error('syncDemoFromAdmin failed:', err);
+  }
+}
+
+// Debounced trigger: collapses bursts of Twilio webhooks (each SMS reply
+// fires one) into a single resync ~2s later. Fire-and-forget.
+let _demoSyncTimer: NodeJS.Timeout | null = null;
+export function syncDemoFromAdminSoon(): void {
+  if (_demoSyncTimer) clearTimeout(_demoSyncTimer);
+  _demoSyncTimer = setTimeout(() => {
+    _demoSyncTimer = null;
+    void syncDemoFromAdmin();
+  }, 2000);
+}
+
 
 async function initStripe() {
   const databaseUrl = process.env.DATABASE_URL;
@@ -604,6 +679,23 @@ async function initStripe() {
 
   setupBodyParsing(app);
   setupRequestLogging(app);
+
+  // After any Twilio webhook OR any admin write to calls/jobs, schedule
+  // a debounced re-mirror of admin → demo so new missed calls and SMS
+  // replies show up in the demo account without needing a backend restart.
+  app.use((req, res, next) => {
+    const p = req.path;
+    const isMutation = req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS';
+    const shouldSync =
+      p.startsWith('/api/twilio/') ||
+      (isMutation && (p.startsWith('/api/missed-calls') || p.startsWith('/api/jobs')));
+    if (shouldSync) {
+      res.on('finish', () => {
+        if (res.statusCode < 500) syncDemoFromAdminSoon();
+      });
+    }
+    next();
+  });
 
   configureExpoAndLanding(app);
 
