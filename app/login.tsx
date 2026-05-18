@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, Pressable, TextInput, Platform, Alert,
-  ActivityIndicator, KeyboardAvoidingView, ScrollView, Linking,
+  ActivityIndicator, KeyboardAvoidingView, ScrollView, Linking, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -57,10 +57,11 @@ export default function LoginScreen() {
     return (
       <View style={[styles.landing, { paddingTop: topInset + 20, paddingBottom: bottomInset + 20 }]}>
         <Animated.View entering={FadeIn.duration(700)} style={styles.landingHero}>
-          <View style={styles.logoBg}>
-            <Ionicons name="flash" size={56} color={Colors.accent} />
-          </View>
-          <Text style={styles.appName}>TradieCatch</Text>
+          <Image
+            source={require('@/assets/images/brand-logo.png')}
+            style={styles.brandLogo}
+            resizeMode="contain"
+          />
           <Text style={styles.tagline}>Never miss a customer again</Text>
         </Animated.View>
 
@@ -182,7 +183,7 @@ function LandingFeature({ icon, text }: { icon: string; text: string }) {
   return (
     <View style={styles.landingFeatureRow}>
       <View style={styles.landingFeatureIcon}>
-        <Ionicons name={icon as any} size={18} color={Colors.accent} />
+        <Ionicons name={icon as any} size={18} color={Colors.accentLight} />
       </View>
       <Text style={styles.landingFeatureText}>{text}</Text>
     </View>
@@ -200,20 +201,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 20,
   },
-  logoBg: {
-    width: 100,
-    height: 100,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255, 107, 53, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  appName: {
-    fontSize: 36,
-    fontFamily: 'Inter_700Bold',
-    color: Colors.white,
-    marginBottom: 6,
+  brandLogo: {
+    width: 320,
+    height: 130,
+    marginBottom: 12,
   },
   tagline: {
     fontSize: 16,
@@ -233,7 +224,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: 'rgba(255, 107, 53, 0.15)',
+    backgroundColor: 'rgba(255, 199, 44, 0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -258,7 +249,7 @@ const styles = StyleSheet.create({
   primaryBtnText: {
     fontSize: 18,
     fontFamily: 'Inter_700Bold',
-    color: Colors.white,
+    color: Colors.accentText,
   },
   secondaryBtn: {
     alignItems: 'center',
@@ -296,7 +287,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+    backgroundColor: 'rgba(255, 199, 44, 0.12)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -360,7 +351,7 @@ const styles = StyleSheet.create({
   submitBtnText: {
     fontSize: 17,
     fontFamily: 'Inter_700Bold',
-    color: Colors.white,
+    color: Colors.accentText,
   },
   switchBtn: {
     marginTop: 16,

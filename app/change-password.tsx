@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   submitBtnDisabled: { opacity: 0.6 },
-  submitText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: 'Inter_700Bold' },
+  submitText: { color: Colors.accentText, fontSize: 16, fontWeight: '700', fontFamily: 'Inter_700Bold' },
   signoutBtn: { marginTop: 18, alignItems: 'center', paddingVertical: 8 },
   signoutText: { color: Colors.textSecondary, fontSize: 14, fontFamily: 'Inter_500Medium' },
   error: {

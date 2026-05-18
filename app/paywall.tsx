@@ -78,7 +78,7 @@ export default function PaywallScreen() {
           disabled={checkingSubscription}
         >
           {checkingSubscription ? (
-            <ActivityIndicator size="small" color={Colors.white} />
+            <ActivityIndicator size="small" color={Colors.accentText} />
           ) : (
             <Text style={styles.subscribeBtnText}>I've Paid &mdash; Activate Account</Text>
           )}
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   priceBadgeText: {
     fontSize: 11,
     fontFamily: 'Inter_700Bold',
-    color: Colors.white,
+    color: Colors.accentText,
     letterSpacing: 1,
   },
   priceRow: {
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   subscribeBtnText: {
     fontSize: 17,
     fontFamily: 'Inter_700Bold',
-    color: Colors.white,
+    color: Colors.accentText,
   },
   linkText: {
     fontSize: 14,

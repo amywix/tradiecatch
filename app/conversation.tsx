@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   bubbleTextBusiness: {
-    color: Colors.white,
+    color: Colors.accentText,
   },
   bubbleTextCustomer: {
     color: Colors.text,
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   bubbleTimeBusiness: {
-    color: 'rgba(255,255,255,0.7)',
+    color: 'rgba(10,10,10,0.55)',
   },
   bubbleTimeCustomer: {
     color: Colors.textTertiary,

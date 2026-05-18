@@ -1427,7 +1427,7 @@ export default function SettingsScreen() {
                         onSubmitEditing={handleSaveCalendlyLink}
                       />
                       <Pressable onPress={handleSaveCalendlyLink} style={{ marginTop: 8, alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 8, backgroundColor: Colors.accent, borderRadius: 8 }}>
-                        <Text style={{ color: Colors.white, fontFamily: 'Inter_600SemiBold', fontSize: 13 }}>Save Calendly Link</Text>
+                        <Text style={{ color: Colors.accentText, fontFamily: 'Inter_600SemiBold', fontSize: 13 }}>Save Calendly Link</Text>
                       </Pressable>
                     </View>
                   )}
@@ -1466,7 +1466,7 @@ export default function SettingsScreen() {
                         onSubmitEditing={handleSaveGoogleCalLink}
                       />
                       <Pressable onPress={handleSaveGoogleCalLink} style={{ marginTop: 8, alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 8, backgroundColor: Colors.accent, borderRadius: 8 }}>
-                        <Text style={{ color: Colors.white, fontFamily: 'Inter_600SemiBold', fontSize: 13 }}>Save Google Calendar Link</Text>
+                        <Text style={{ color: Colors.accentText, fontFamily: 'Inter_600SemiBold', fontSize: 13 }}>Save Google Calendar Link</Text>
                       </Pressable>
                     </View>
                   )}
@@ -1996,7 +1996,7 @@ const styles = StyleSheet.create({
   flowStepNumberText: {
     fontSize: 13,
     fontFamily: 'Inter_700Bold',
-    color: Colors.white,
+    color: Colors.accentText,
   },
   flowStepContent: {
     flex: 1,

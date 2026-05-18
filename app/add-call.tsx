@@ -189,6 +189,6 @@ const styles = StyleSheet.create({
   saveBtnText: {
     fontSize: 16,
     fontFamily: 'Inter_700Bold',
-    color: Colors.white,
+    color: Colors.accentText,
   },
 });

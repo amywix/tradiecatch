@@ -256,7 +256,7 @@ export default function AdminCreateTradieScreen() {
       )}
 
       <Pressable style={[styles.primaryBtn, isSubmitting && styles.btnDisabled]} onPress={handleCreate} disabled={isSubmitting} testID="submit-btn">
-        {isSubmitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Create account</Text>}
+        {isSubmitting ? <ActivityIndicator color={Colors.accentText} /> : <Text style={styles.primaryBtnText}>Create account</Text>}
       </Pressable>
     </KeyboardAwareScrollView>
   );
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   chipOn: { backgroundColor: Colors.accent, borderColor: Colors.accent },
   chipText: { fontSize: 13, color: Colors.text, fontFamily: 'Inter_500Medium' },
-  chipTextOn: { color: '#fff', fontFamily: 'Inter_600SemiBold' },
+  chipTextOn: { color: Colors.accentText, fontFamily: 'Inter_600SemiBold' },
   advancedToggle: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingVertical: 10, marginTop: 6, marginBottom: 4,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   btnDisabled: { opacity: 0.6 },
-  primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: 'Inter_700Bold' },
+  primaryBtnText: { color: Colors.accentText, fontSize: 16, fontWeight: '700', fontFamily: 'Inter_700Bold' },
   secondaryBtn: { marginTop: 12, alignItems: 'center', paddingVertical: 12 },
   secondaryBtnText: { color: Colors.textSecondary, fontSize: 14, fontFamily: 'Inter_500Medium' },
   successHeader: { alignItems: 'center', marginBottom: 24 },

@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   quickBtnTextSelected: {
-    color: Colors.white,
+    color: Colors.accentText,
   },
   input: {
     backgroundColor: Colors.surface,

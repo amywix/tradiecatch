@@ -106,9 +106,9 @@ function CallItem({ item, onSendAutoSms, onBookJob, onDelete, onViewConvo, sendi
             hitSlop={8}
           >
             {isSending ? (
-              <ActivityIndicator size="small" color={Colors.white} />
+              <ActivityIndicator size="small" color={Colors.accentText} />
             ) : (
-              <Ionicons name="chatbubble-outline" size={16} color={Colors.white} />
+              <Ionicons name="chatbubble-outline" size={16} color={Colors.accentText} />
             )}
             <Text style={styles.actionTextPrimary}>
               {isSending ? 'Sending...' : 'Send Auto-SMS'}
@@ -263,7 +263,7 @@ export default function CallsScreen() {
         </View>
         <View style={styles.headerActions}>
           <Pressable onPress={handleAddCall} style={styles.addBtn} hitSlop={8} testID="add-call-btn">
-            <Ionicons name="add" size={20} color={Colors.white} />
+            <Ionicons name="add" size={20} color={Colors.accentText} />
             <Text style={styles.addBtnText}>New</Text>
           </Pressable>
           <Pressable onPress={signOut} style={styles.signOutBtn} hitSlop={8} testID="signout-btn">
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   addBtnText: {
     fontSize: 13,
     fontFamily: 'Inter_600SemiBold',
-    color: Colors.white,
+    color: Colors.accentText,
   },
   listContent: {
     paddingBottom: 16,
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
   actionTextPrimary: {
     fontSize: 13,
     fontFamily: 'Inter_600SemiBold',
-    color: Colors.white,
+    color: Colors.accentText,
   },
   actionBtn: {
     flexDirection: 'row',
