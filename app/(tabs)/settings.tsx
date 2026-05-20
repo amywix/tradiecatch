@@ -353,7 +353,7 @@ export default function SettingsScreen() {
   };
   const MSG_LABELS: Record<string, { label: string; hint: string }> = {
     greeting_missed_call: { label: 'Missed Call Greeting', hint: 'Use {businessName} or {businessLine} ("\\nThis is Name.")' },
-    greeting_demo: { label: 'Demo / Text Trigger Greeting', hint: 'Sent when someone texts the word "Demo". Use {businessName}' },
+    greeting_demo: { label: 'Demo / Text Trigger Greeting', hint: 'Sent when someone texts the word "Tradie". Use {businessName}' },
     service_intro: { label: 'Service Selection Intro', hint: 'Use {name} for customer\'s name and {menu} for services list' },
     address_request: { label: 'Address Request', hint: 'Use {service} for the chosen service' },
     email_request: { label: 'Email Request', hint: 'Sent after address is collected' },

@@ -545,8 +545,8 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
       if (upper.includes("YES")) {
         response = `Awesome! 🎉\n\nGrab a 10-minute slot that suits you here:\n\n📅 ${CALENDLY_BOOKING_URL}\n\nOnce you've booked I'll send you a confirmation. Talk soon!`;
         newState = "demo_awaiting_calendly";
-      } else if (body.trim().toLowerCase().includes("demo")) {
-        // They sent "demo" again — re-send the offer
+      } else if (body.trim().toLowerCase().includes("tradie")) {
+        // They sent the trigger word again — re-send the offer
         response = `Here's the demo again 🎬\n${DEMO_VIDEO_URL}\n\nReply YES to grab a 10-minute call and I'll send you the booking link.`;
         newState = "demo_offer_sent";
       } else {
@@ -561,7 +561,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
       if (upper.includes("YES") || body.trim().toLowerCase().includes("link")) {
         response = `Here's the booking link again:\n\n📅 ${CALENDLY_BOOKING_URL}`;
         newState = "demo_awaiting_calendly";
-      } else if (body.trim().toLowerCase().includes("demo")) {
+      } else if (body.trim().toLowerCase().includes("tradie")) {
         response = `Here's the demo again 🎬\n${DEMO_VIDEO_URL}\n\nAnd the booking link: 📅 ${CALENDLY_BOOKING_URL}`;
         newState = "demo_awaiting_calendly";
       } else {
@@ -636,7 +636,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
     }
 
     case "demo_completed": {
-      if (body.trim().toLowerCase().includes("demo")) {
+      if (body.trim().toLowerCase().includes("tradie")) {
         // Re-engage — send the offer again
         response = `Great to hear from you again! 😊\n\n🎬 TradieCatch demo: ${DEMO_VIDEO_URL}\n\nReply YES to book a free 10-minute setup call.`;
         newState = "demo_offer_sent";
@@ -697,13 +697,13 @@ export async function handleDemoSmsFlow(fromPhone: string, body: string, toPhone
 
   // ── No existing conversation ──────────────────────────────────────────────
   if (!activeDemo && !completedDemo) {
-    if (body.trim().toLowerCase().includes("demo")) {
+    if (body.trim().toLowerCase().includes("tradie")) {
       console.log(`Demo flow: new contact from ${fromPhone} — sending offer`);
       return await handleDemoTrigger(fromPhone, userId);
     }
-    // Non-"demo" first message — nudge them to the right word
+    // Non-trigger first message — nudge them to the right word
     const { businessName } = await getTwilioConfig(userId);
-    const nudge = `Hi! 👋 Text the word DEMO to see how TradieCatch works and book a free 10-minute setup call.\n\n- ${businessName || "TradieCatch"}`;
+    const nudge = `Hi! 👋 Text the word TRADIE to see how TradieCatch works and book a free 10-minute setup call.\n\n- ${businessName || "TradieCatch"}`;
     await sendSms(fromPhone, nudge, userId);
     return nudge;
   }
@@ -822,7 +822,7 @@ export async function handleDemoSmsFlow(fromPhone: string, body: string, toPhone
 }
 
 /**
- * Called when someone texts "DEMO" with no existing active conversation.
+ * Called when someone texts "TRADIE" with no existing active conversation.
  * Creates a missed call record and fires the full automated customer-experience
  * bot at them — so they see exactly what their own customers would experience.
  */
