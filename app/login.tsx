@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, Pressable, TextInput, Platform, Alert,
   ActivityIndicator, KeyboardAvoidingView, ScrollView, Linking, Image,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +16,7 @@ type Screen = 'landing' | 'login';
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
+  const { width: windowWidth } = useWindowDimensions();
 
   const [screen, setScreen] = useState<Screen>('landing');
   const [email, setEmail] = useState('');
@@ -22,8 +24,12 @@ export default function LoginScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const topInset = Platform.OS === 'web' ? 67 : insets.top;
-  const bottomInset = Platform.OS === 'web' ? 34 : insets.bottom;
+  const isWeb = Platform.OS === 'web';
+  const isDesktopWeb = isWeb && windowWidth >= 768;
+  // Desktop browsers have no status bar to dodge — keep top padding tight.
+  // Mobile web still needs a little room for the URL bar.
+  const topInset = isDesktopWeb ? 24 : isWeb ? 20 : insets.top;
+  const bottomInset = isDesktopWeb ? 24 : isWeb ? 20 : insets.bottom;
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -55,42 +61,44 @@ export default function LoginScreen() {
 
   if (screen === 'landing') {
     return (
-      <View style={[styles.landing, { paddingTop: topInset + 20, paddingBottom: bottomInset + 20 }]}>
-        <Animated.View entering={FadeIn.duration(700)} style={styles.landingHero}>
-          <Image
-            source={require('@/assets/images/brand-logo.png')}
-            style={styles.brandLogo}
-            resizeMode="contain"
-          />
-          <Text style={styles.tagline}>Never miss a customer again</Text>
-        </Animated.View>
+      <View style={[styles.landing, { paddingTop: topInset, paddingBottom: bottomInset }]}>
+        <View style={styles.landingInner}>
+          <Animated.View entering={FadeIn.duration(700)} style={styles.landingHero}>
+            <Image
+              source={require('@/assets/images/brand-logo.png')}
+              style={styles.brandLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.tagline}>Never miss a customer again</Text>
+          </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.landingFeatures}>
-          <LandingFeature icon="chatbubbles-outline" text="Auto SMS replies to missed calls" />
-          <LandingFeature icon="construct-outline" text="Customers book jobs via SMS" />
-          <LandingFeature icon="calendar-outline" text="Manage all your jobs in one place" />
-        </Animated.View>
+          <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.landingFeatures}>
+            <LandingFeature icon="chatbubbles-outline" text="Auto SMS replies to missed calls" />
+            <LandingFeature icon="construct-outline" text="Customers book jobs via SMS" />
+            <LandingFeature icon="calendar-outline" text="Manage all your jobs in one place" />
+          </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(500).duration(500)} style={styles.landingActions}>
-          <Pressable
-            style={styles.primaryBtn}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setScreen('login');
-            }}
-            testID="login-btn"
-          >
-            <Text style={styles.primaryBtnText}>Sign In</Text>
-          </Pressable>
+          <Animated.View entering={FadeInUp.delay(500).duration(500)} style={styles.landingActions}>
+            <Pressable
+              style={styles.primaryBtn}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                setScreen('login');
+              }}
+              testID="login-btn"
+            >
+              <Text style={styles.primaryBtnText}>Sign In</Text>
+            </Pressable>
 
-          <Pressable
-            style={styles.secondaryBtn}
-            onPress={openSalesContact}
-            testID="enquire-btn"
-          >
-            <Text style={styles.secondaryBtnText}>Don't have an account? Get in touch</Text>
-          </Pressable>
-        </Animated.View>
+            <Pressable
+              style={styles.secondaryBtn}
+              onPress={openSalesContact}
+              testID="enquire-btn"
+            >
+              <Text style={styles.secondaryBtnText}>Don't have an account? Get in touch</Text>
+            </Pressable>
+          </Animated.View>
+        </View>
       </View>
     );
   }
@@ -101,14 +109,15 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingTop: topInset + 16, paddingBottom: bottomInset + 20 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: topInset, paddingBottom: bottomInset }]}
         keyboardShouldPersistTaps="handled"
       >
-        <Pressable onPress={goBack} style={styles.backBtn} hitSlop={12}>
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
-        </Pressable>
+        <View style={styles.formInner}>
+          <Pressable onPress={goBack} style={styles.backBtn} hitSlop={12}>
+            <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          </Pressable>
 
-        <Animated.View entering={FadeIn.duration(400)} style={styles.formCard}>
+          <Animated.View entering={FadeIn.duration(400)} style={styles.formCard}>
           <View style={styles.formHeader}>
             <View style={styles.formLogoBg}>
               <Ionicons name="flash" size={28} color={Colors.accent} />
@@ -174,6 +183,7 @@ export default function LoginScreen() {
             </Text>
           </Pressable>
         </Animated.View>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -195,16 +205,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primary,
     paddingHorizontal: 24,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  landingInner: {
+    width: '100%',
+    maxWidth: 460,
+    gap: 32,
   },
   landingHero: {
     alignItems: 'center',
-    paddingTop: 20,
   },
   brandLogo: {
-    width: 320,
-    height: 130,
-    marginBottom: 12,
+    width: 280,
+    height: 110,
+    marginBottom: 8,
   },
   tagline: {
     fontSize: 16,
@@ -271,6 +286,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  formInner: {
+    width: '100%',
+    maxWidth: 460,
   },
   formCard: {
     backgroundColor: Colors.surface,

@@ -251,8 +251,8 @@ export default function CallsScreen() {
     />
   ), [handleSendAutoSms, handleBookJob, handleDelete, handleViewConvo, sendingId]);
 
-  const webTopInset = Platform.OS === 'web' ? 67 : 0;
-  const webBottomInset = Platform.OS === 'web' ? 34 : 0;
+  const webTopInset = Platform.OS === 'web' ? 16 : 0;
+  const webBottomInset = Platform.OS === 'web' ? 16 : 0;
 
   return (
     <View style={styles.container}>

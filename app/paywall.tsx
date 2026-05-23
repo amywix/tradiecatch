@@ -16,7 +16,7 @@ export default function PaywallScreen() {
   const [errorMsg, setErrorMsg] = useState('');
   const [checkingSubscription, setCheckingSubscription] = useState(false);
 
-  const webTopInset = Platform.OS === 'web' ? 67 : 0;
+  const webTopInset = Platform.OS === 'web' ? 16 : 0;
 
   const handleAlreadySubscribed = useCallback(async () => {
     setCheckingSubscription(true);

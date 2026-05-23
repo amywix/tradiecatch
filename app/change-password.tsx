@@ -24,8 +24,8 @@ export default function ChangePasswordScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const topInset = Platform.OS === 'web' ? 67 : insets.top;
-  const bottomInset = Platform.OS === 'web' ? 34 : insets.bottom;
+  const topInset = Platform.OS === 'web' ? 20 : insets.top;
+  const bottomInset = Platform.OS === 'web' ? 20 : insets.bottom;
 
   const handleSubmit = useCallback(async () => {
     setErrorMsg('');
