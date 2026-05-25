@@ -184,7 +184,7 @@ function configureExpoAndLanding(app: express.Application) {
   // Expo's generated index.html has no <meta name="description"> or
   // social tags by default, which Lighthouse flags. Injecting here means
   // the next `expo export` doesn't wipe them.
-  const SEO_DESCRIPTION = "TradieCatch helps Aussie tradies — especially electricians — never miss a job. Auto-reply to missed calls, capture jobs over SMS, and book work straight into your calendar.";
+  const SEO_DESCRIPTION = "CallCatch helps Aussie tradies — especially electricians — never miss a job. Auto-reply to missed calls, capture jobs over SMS, and book work straight into your calendar.";
   function safeHostUrl(proto: string, host: string): string {
     // Only allow hostname-safe chars + optional :port. Anything else → empty.
     const clean = (host || "").match(/^[a-zA-Z0-9.\-]+(:\d+)?$/) ? host : "";
@@ -196,12 +196,12 @@ function configureExpoAndLanding(app: express.Application) {
     const tags = [
       `<meta name="description" content="${SEO_DESCRIPTION}" />`,
       `<meta name="robots" content="index, follow" />`,
-      `<meta property="og:title" content="TradieCatch — Never miss a job" />`,
+      `<meta property="og:title" content="CallCatch — Never miss a job" />`,
       `<meta property="og:description" content="${SEO_DESCRIPTION}" />`,
       `<meta property="og:type" content="website" />`,
       `<meta property="og:url" content="${safeUrl}" />`,
       `<meta name="twitter:card" content="summary" />`,
-      `<meta name="twitter:title" content="TradieCatch — Never miss a job" />`,
+      `<meta name="twitter:title" content="CallCatch — Never miss a job" />`,
       `<meta name="twitter:description" content="${SEO_DESCRIPTION}" />`,
     ].join("\n    ");
     return html.replace("<head>", `<head>\n    ${tags}`);
@@ -313,47 +313,62 @@ async function bootstrapDefaultUser() {
 
   try {
     // One-shot: remove the demo@ account if it still exists (sales/demo flow has been retired)
-    const demoToDelete = await db.select().from(users).where(eq(users.email, 'demo@tradiecatch.com'));
+    const demoToDelete = await db.select().from(users).where(eq(users.email, 'demo@callcatch.com'));
     if (demoToDelete.length > 0) {
       const demoId = demoToDelete[0].id;
       await db.delete(missedCalls).where(eq(missedCalls.userId, demoId));
       await db.delete(jobs).where(eq(jobs.userId, demoId));
       await db.delete(settings).where(eq(settings.userId, demoId));
       await db.delete(users).where(eq(users.id, demoId));
-      log('Bootstrap: deleted demo@tradiecatch.com account and all associated data');
+      log('Bootstrap: deleted demo@callcatch.com account and all associated data');
     }
 
     // One-shot rename: if a legacy 'demo' user exists that was actually being
     // used as the admin account (training period), rename it back to
-    // admin@tradiecatch.com so the operator's data is preserved. The brand-new
+    // admin@callcatch.com so the operator's data is preserved. The brand-new
     // demo account (read-only, for showing the guys) is created fresh below.
     const legacyDemo = await db.select().from(users).where(eq(users.email, 'demo'));
-    const adminAlready = await db.select().from(users).where(eq(users.email, 'admin@tradiecatch.com'));
+    const adminAlready = await db.select().from(users).where(eq(users.email, 'admin@callcatch.com'));
     if (legacyDemo.length > 0 && adminAlready.length === 0) {
-      await db.update(users).set({ email: 'admin@tradiecatch.com' }).where(eq(users.id, legacyDemo[0].id));
-      log("Bootstrap: renamed legacy 'demo' user back to admin@tradiecatch.com");
+      await db.update(users).set({ email: 'admin@callcatch.com' }).where(eq(users.id, legacyDemo[0].id));
+      log("Bootstrap: renamed legacy 'demo' user back to admin@callcatch.com");
+    }
+
+    // Rebrand migration (TradieCatch → CallCatch): rename the legacy admin
+    // record so the operator keeps all their data, settings, and history
+    // under the new brand email. Runs once; the second lookup just no-ops.
+    const legacyAdmin = await db.select().from(users).where(eq(users.email, 'admin@tradiecatch.com'));
+    const newAdminExists = await db.select().from(users).where(eq(users.email, 'admin@callcatch.com'));
+    if (legacyAdmin.length > 0 && newAdminExists.length === 0) {
+      await db.update(users).set({ email: 'admin@callcatch.com' }).where(eq(users.id, legacyAdmin[0].id));
+      log("Bootstrap: migrated admin@tradiecatch.com → admin@callcatch.com");
+    } else if (legacyAdmin.length > 0 && newAdminExists.length > 0) {
+      // Both exist (shouldn't happen, but be defensive): delete the stale
+      // legacy record so the unique-email constraint isn't violated later.
+      await db.delete(users).where(eq(users.id, legacyAdmin[0].id));
+      log("Bootstrap: removed duplicate legacy admin@tradiecatch.com record");
     }
 
     // Ensure the admin account exists (creating it if this is a fresh DB) and
     // that its password is set to the env-configurable value (or 'admin123' by
     // default). On startup we always reset it so the operator can recover access
     // by editing the env var.
-    let admin = (await db.select().from(users).where(eq(users.email, 'admin@tradiecatch.com')))[0];
+    let admin = (await db.select().from(users).where(eq(users.email, 'admin@callcatch.com')))[0];
     const adminPwd = process.env.ADMIN_PASSWORD || 'admin123';
     if (!admin) {
       const hash = await bcrypt.hash(adminPwd, 12);
       [admin] = await db.insert(users).values({
-        email: 'admin@tradiecatch.com',
-        username: 'TradieCatch Admin',
+        email: 'admin@callcatch.com',
+        username: 'CallCatch Admin',
         password: hash,
         mustChangePassword: false,
         acceptedTermsAt: new Date(),
       }).returning();
-      log('Bootstrap: created admin@tradiecatch.com');
+      log('Bootstrap: created admin@callcatch.com');
     } else {
       const newHash = await bcrypt.hash(adminPwd, 12);
       await db.update(users).set({ password: newHash, mustChangePassword: false }).where(eq(users.id, admin.id));
-      log('Bootstrap: admin@tradiecatch.com password reset');
+      log('Bootstrap: admin@callcatch.com password reset');
     }
 
     // Make sure the admin has a settings row with the operator's Twilio number.
@@ -361,7 +376,7 @@ async function bootstrapDefaultUser() {
     if (!adminSettings) {
       [adminSettings] = await db.insert(settings).values({
         userId: admin.id,
-        businessName: 'TradieCatch',
+        businessName: 'CallCatch',
         autoReplyEnabled: true,
         bookingCalendarEnabled: true,
         bookingSlots: ["8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"],
@@ -391,7 +406,7 @@ async function bootstrapDefaultUser() {
       const hash = await bcrypt.hash(demoPwd, 12);
       [demo] = await db.insert(users).values({
         email: 'demo',
-        username: 'TradieCatch Demo',
+        username: 'CallCatch Demo',
         password: hash,
         mustChangePassword: false,
         acceptedTermsAt: new Date(),
@@ -407,7 +422,7 @@ async function bootstrapDefaultUser() {
     // reflects the live config.
     const existingDemoSettings = (await db.select().from(settings).where(eq(settings.userId, demo.id)))[0];
     const mirroredFields = {
-      businessName: adminSettings?.businessName ?? 'TradieCatch',
+      businessName: adminSettings?.businessName ?? 'CallCatch',
       autoReplyEnabled: adminSettings?.autoReplyEnabled ?? true,
       bookingCalendarEnabled: adminSettings?.bookingCalendarEnabled ?? true,
       bookingSlots: adminSettings?.bookingSlots ?? ["8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"],
@@ -549,7 +564,7 @@ async function bootstrapDefaultUser() {
 // only triggers one resync.
 async function syncDemoFromAdmin(): Promise<void> {
   try {
-    const admin = (await db.select().from(users).where(eq(users.email, 'admin@tradiecatch.com')))[0];
+    const admin = (await db.select().from(users).where(eq(users.email, 'admin@callcatch.com')))[0];
     const demo = (await db.select().from(users).where(eq(users.email, 'demo')))[0];
     if (!admin || !demo) return;
 

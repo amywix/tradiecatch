@@ -28,7 +28,7 @@ export default function PaywallScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace('/(tabs)');
     } else {
-      setErrorMsg("We couldn't find an active subscription for your account yet. If you've just paid, wait a moment and try again — or contact us at hello@tradiecatch.com.");
+      setErrorMsg("We couldn't find an active subscription for your account yet. If you've just paid, wait a moment and try again — or contact us at hello@callcatch.com.");
     }
   }, [checkSubscription]);
 
@@ -44,7 +44,7 @@ export default function PaywallScreen() {
         <Animated.View entering={FadeInDown.delay(200).duration(500)}>
           <Text style={styles.title}>Subscription Required</Text>
           <Text style={styles.subtitle}>
-            Your TradieCatch account isn't active yet
+            Your CallCatch account isn't active yet
           </Text>
         </Animated.View>
 
@@ -85,7 +85,7 @@ export default function PaywallScreen() {
         </Pressable>
 
         <Text style={styles.helperText}>
-          Need help? Email hello@tradiecatch.com
+          Need help? Email hello@callcatch.com
         </Text>
       </View>
     </View>

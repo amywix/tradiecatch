@@ -21,7 +21,7 @@ export default function SettingsScreen() {
   const { settings, updateAppSettings, updateServices, refreshAll } = useData();
   const { isPro, openCustomerPortal } = useSubscription();
   const { user, logout } = useAuth();
-  const isAdmin = user?.email === 'admin@tradiecatch.com';
+  const isAdmin = user?.email === 'admin@callcatch.com';
   const isDemo = user?.email === 'demo';
 
   // Defensive: the Settings tab is hidden for the demo account in
@@ -788,9 +788,9 @@ export default function SettingsScreen() {
                   />
                 </View>
                 <View style={styles.settingContent}>
-                  <Text style={styles.settingLabel}>{isPro ? 'TradieCatch Pro' : 'No Active Subscription'}</Text>
+                  <Text style={styles.settingLabel}>{isPro ? 'CallCatch Pro' : 'No Active Subscription'}</Text>
                   <Text style={styles.settingDescription}>
-                    {isPro ? 'Your subscription is active' : 'Subscribe to continue using TradieCatch'}
+                    {isPro ? 'Your subscription is active' : 'Subscribe to continue using CallCatch'}
                   </Text>
                 </View>
               </View>
@@ -1252,7 +1252,7 @@ export default function SettingsScreen() {
                       {settings.twilioPhoneNumber || 'Not set yet'}
                     </Text>
                     <Text style={styles.settingDescription}>
-                      This is your dedicated TradieCatch number. Customers call this number, missed calls get an instant SMS reply, and bookings flow into your Jobs tab. The number is set up and managed for you — no action needed.
+                      This is your dedicated CallCatch number. Customers call this number, missed calls get an instant SMS reply, and bookings flow into your Jobs tab. The number is set up and managed for you — no action needed.
                     </Text>
                   </View>
                 </View>
@@ -1804,7 +1804,7 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>About</Text>
           <View style={styles.card}>
             <View style={styles.aboutRow}>
-              <Text style={styles.aboutLabel}>TradieCatch</Text>
+              <Text style={styles.aboutLabel}>CallCatch</Text>
               <Text style={styles.aboutValue}>v1.0.0</Text>
             </View>
             <View style={styles.aboutDivider} />

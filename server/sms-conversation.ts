@@ -192,7 +192,7 @@ async function handleDemoTrigger(fromPhone: string, userId: string): Promise<str
     repliedAt: new Date(),
     conversationState: "demo_offer_sent",
     conversationLog: log as any,
-    selectedService: "TradieCatch Setup",
+    selectedService: "CallCatch Setup",
   });
 
   return message;
@@ -623,7 +623,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         const dateLabel = call.selectedTime || updates.selectedTime || "";
         updates.selectedTime = `${dateLabel} ${timeSlot}`;
         const { businessName } = await getTwilioConfig(callUserId);
-        response = `All booked! 🎉\n\nYour free 10-minute TradieCatch setup call is confirmed for:\n📅 ${dateLabel} at ${timeSlot}\n\nWe'll walk you through everything and get you set up. See you then!\n\n- ${businessName || "TradieCatch"}`;
+        response = `All booked! 🎉\n\nYour free 10-minute CallCatch setup call is confirmed for:\n📅 ${dateLabel} at ${timeSlot}\n\nWe'll walk you through everything and get you set up. See you then!\n\n- ${businessName || "CallCatch"}`;
         newState = "demo_completed";
         updates.jobBooked = true;
 
@@ -636,7 +636,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
           userId: callUserId,
           callerName: call.callerName || `Demo Lead (${call.phoneNumber})`,
           phoneNumber: call.phoneNumber,
-          jobType: "TradieCatch Setup Call (Demo)",
+          jobType: "CallCatch Setup Call (Demo)",
           date: dateStr,
           time: timeSlot,
           address: "",
@@ -664,11 +664,11 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
     case "demo_completed": {
       if (body.trim().toLowerCase().includes("tradie")) {
         // Re-engage — send the offer again
-        response = `Great to hear from you again! 😊\n\n🎬 TradieCatch demo: ${DEMO_VIDEO_URL}\n\nReply YES to book a free 10-minute setup call.`;
+        response = `Great to hear from you again! 😊\n\n🎬 CallCatch demo: ${DEMO_VIDEO_URL}\n\nReply YES to book a free 10-minute setup call.`;
         newState = "demo_offer_sent";
       } else {
         const { businessName } = await getTwilioConfig(callUserId);
-        response = `Your setup call is already booked — we'll be in touch! 🙌\n\n- ${businessName || "TradieCatch"}`;
+        response = `Your setup call is already booked — we'll be in touch! 🙌\n\n- ${businessName || "CallCatch"}`;
         newState = "demo_completed";
       }
       break;
@@ -694,7 +694,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
 }
 
 /**
- * Dedicated handler for the TradieCatch sales/demo number.
+ * Dedicated handler for the CallCatch sales/demo number.
  * Every inbound SMS on that number runs through the demo booking flow,
  * regardless of message content.  Normal tradie missed-call logic is
  * never triggered here.
@@ -729,7 +729,7 @@ export async function handleDemoSmsFlow(fromPhone: string, body: string, toPhone
     }
     // Non-trigger first message — nudge them to the right word
     const { businessName } = await getTwilioConfig(userId);
-    const nudge = `Hi! 👋 Text the word TRADIE to see how TradieCatch works and book a free 10-minute setup call.\n\n- ${businessName || "TradieCatch"}`;
+    const nudge = `Hi! 👋 Text the word TRADIE to see how CallCatch works and book a free 10-minute setup call.\n\n- ${businessName || "CallCatch"}`;
     await sendSms(fromPhone, nudge, userId);
     return nudge;
   }
@@ -754,7 +754,7 @@ export async function handleDemoSmsFlow(fromPhone: string, body: string, toPhone
         newState = "demo_awaiting_date";
       } else {
         // Any other reply — re-send the offer
-        response = `Here's the TradieCatch demo 🎬\n${DEMO_VIDEO_URL}\n\nReply YES to book your free 10-minute setup call.`;
+        response = `Here's the CallCatch demo 🎬\n${DEMO_VIDEO_URL}\n\nReply YES to book your free 10-minute setup call.`;
         newState = "demo_offer_sent";
       }
       break;
@@ -786,7 +786,7 @@ export async function handleDemoSmsFlow(fromPhone: string, body: string, toPhone
         const dateLabel = call.selectedTime || updates.selectedTime || "";
         updates.selectedTime = `${dateLabel} ${timeSlot}`;
         const { businessName } = await getTwilioConfig(userId);
-        response = `All booked! 🎉\n\nYour free 10-minute TradieCatch setup call is confirmed for:\n📅 ${dateLabel} at ${timeSlot}\n\nWe'll walk you through everything and get you set up. See you then!\n\n- ${businessName || "TradieCatch"}`;
+        response = `All booked! 🎉\n\nYour free 10-minute CallCatch setup call is confirmed for:\n📅 ${dateLabel} at ${timeSlot}\n\nWe'll walk you through everything and get you set up. See you then!\n\n- ${businessName || "CallCatch"}`;
         newState = "demo_completed";
         updates.jobBooked = true;
 
@@ -799,7 +799,7 @@ export async function handleDemoSmsFlow(fromPhone: string, body: string, toPhone
           userId,
           callerName: call.callerName || `Demo Lead (${call.phoneNumber})`,
           phoneNumber: call.phoneNumber,
-          jobType: "TradieCatch Setup Call (Demo)",
+          jobType: "CallCatch Setup Call (Demo)",
           date: dateStr,
           time: timeSlot,
           address: "",
@@ -827,7 +827,7 @@ export async function handleDemoSmsFlow(fromPhone: string, body: string, toPhone
     case "demo_completed":
     default: {
       // Re-engage anyone who messages the line again after booking
-      response = `Great to hear from you! 😊\n\n🎬 TradieCatch demo: ${DEMO_VIDEO_URL}\n\nReply YES to book a new free 10-minute setup call.`;
+      response = `Great to hear from you! 😊\n\n🎬 CallCatch demo: ${DEMO_VIDEO_URL}\n\nReply YES to book a new free 10-minute setup call.`;
       newState = "demo_offer_sent";
       break;
     }

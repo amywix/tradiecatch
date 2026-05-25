@@ -206,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const inviteeName: string = payload?.name || payload?.invitee?.name || "there";
       const startTimeRaw: string = payload?.scheduled_event?.start_time || payload?.event?.start_time || "";
-      const eventName: string = payload?.scheduled_event?.name || payload?.event_type?.name || "your TradieCatch call";
+      const eventName: string = payload?.scheduled_event?.name || payload?.event_type?.name || "your CallCatch call";
 
       // Try to extract a phone number from invitee SMS reminder, custom answers, or text reminder
       let invPhone: string =
@@ -269,7 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(200).json({ ok: true, matched: false });
       }
 
-      const confirmation = `🎉 You're all booked, ${inviteeName.split(" ")[0]}!\n\n${timeLabel ? `📅 ${timeLabel}\n\n` : ""}I'll see you on the call. If anything changes you can reschedule from your Calendly confirmation email.\n\n— Amy, TradieCatch`;
+      const confirmation = `🎉 You're all booked, ${inviteeName.split(" ")[0]}!\n\n${timeLabel ? `📅 ${timeLabel}\n\n` : ""}I'll see you on the call. If anything changes you can reschedule from your Calendly confirmation email.\n\n— Amy, CallCatch`;
 
       await sendSms(targetCall.phoneNumber, confirmation, targetCall.userId);
 
@@ -285,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: targetCall.userId,
         callerName: inviteeName || targetCall.callerName || `Demo Lead (${targetCall.phoneNumber})`,
         phoneNumber: targetCall.phoneNumber,
-        jobType: "TradieCatch Setup Call (Calendly)",
+        jobType: "CallCatch Setup Call (Calendly)",
         date: startTimeRaw ? startTimeRaw.slice(0, 10) : "",
         time: timeLabel,
         address: "",
@@ -394,7 +394,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Twilio posts here when a voicemail recording is finished. We store ONLY the
   // RecordingSid + duration. The actual audio stays in Twilio's storage and is
   // streamed on demand from /api/voicemail/:id — no customer audio is persisted
-  // on TradieCatch servers.
+  // on CallCatch servers.
   app.post("/api/twilio/recording-callback", async (req: Request, res: Response) => {
     res.status(200).send("ok");
     try {
@@ -738,7 +738,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const [me] = await db.select().from(users).where(eq(users.id, req.userId!));
       if (!me || me.email !== ADMIN_EMAIL) {
         return res.status(403).json({
-          error: "Twilio credentials are managed by TradieCatch operations. Contact support to change your business number.",
+          error: "Twilio credentials are managed by CallCatch operations. Contact support to change your business number.",
         });
       }
     }

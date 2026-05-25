@@ -1,4 +1,4 @@
-# TradieCatch — Complete User Manual
+# CallCatch — Complete User Manual
 
 _Last updated: May 2026_
 
@@ -6,7 +6,7 @@ _Last updated: May 2026_
 
 ## Table of Contents
 
-1. [What is TradieCatch?](#1-what-is-tradiecatch)
+1. [What is CallCatch?](#1-what-is-callcatch)
 2. [Getting Started](#2-getting-started)
 3. [Privacy & Terms](#3-privacy--terms)
 4. [What's Already Set Up For You](#4-whats-already-set-up-for-you)
@@ -20,20 +20,20 @@ _Last updated: May 2026_
 12. [Booking Calendar Options](#12-booking-calendar-options)
 13. [Voice Greeting & Voicemail](#13-voice-greeting--voicemail)
 14. [Subscription & Billing](#14-subscription--billing)
-15. [Using TradieCatch on the Web](#15-using-tradiecatch-on-the-web)
+15. [Using CallCatch on the Web](#15-using-callcatch-on-the-web)
 16. [Frequently Asked Questions](#16-frequently-asked-questions)
 
 ---
 
-## 1. What is TradieCatch?
+## 1. What is CallCatch?
 
-TradieCatch is an app for tradespeople (electricians, plumbers, etc.) that automatically handles missed calls so you never lose a job lead again.
+CallCatch is an app for tradespeople (electricians, plumbers, etc.) that automatically handles missed calls so you never lose a job lead again.
 
 **Here's what happens when someone calls and you can't answer:**
 
-1. Your dedicated TradieCatch business number picks up and plays your greeting
+1. Your dedicated CallCatch business number picks up and plays your greeting
 2. The caller is offered a choice — "press 1 to leave a voicemail, otherwise just hang up and we'll text you shortly". Voicemail is opt-in: anyone who doesn't press 1 is hung up on without recording. If they do press 1, the recording lives on the phone-system side and is streamed to you on demand when you tap the link in the app, so nothing audio sits on our servers
-3. TradieCatch instantly sends them an SMS to follow up
+3. CallCatch instantly sends them an SMS to follow up
 4. An automated conversation gathers their name, the job, the address, their email, and a preferred time
 5. If the address is inside your travel area, the bot books the job and you get notified
 6. If the address is outside your travel area, the bot politely tells the customer and flags it for you to review manually
@@ -46,11 +46,11 @@ You don't have to do anything while you're on the tools — the bot handles it a
 
 ### How accounts are created
 
-TradieCatch is fully managed. You don't sign yourself up inside the app — once you've spoken with us and your subscription is sorted, we set up your account for you and email you a temporary password. There is no public signup form.
+CallCatch is fully managed. You don't sign yourself up inside the app — once you've spoken with us and your subscription is sorted, we set up your account for you and email you a temporary password. There is no public signup form.
 
 ### Logging in for the first time
 
-1. Open the TradieCatch app (or open the web version in a browser)
+1. Open the CallCatch app (or open the web version in a browser)
 2. Tap **Sign In**
 3. Enter the email address we used to create your account, and the temporary password we sent you
 4. The app will immediately ask you to set a new password of your own — this is a one-time step. After that, you're in.
@@ -69,7 +69,7 @@ Once your subscription is active, the app drops you straight into the **Calls** 
 
 When your account is provisioned, you're bound by two documents:
 
-- **Terms of Service** — the rules for using TradieCatch (subscription, billing, lawful use, your obligations under the Spam Act, etc.)
+- **Terms of Service** — the rules for using CallCatch (subscription, billing, lawful use, your obligations under the Spam Act, etc.)
 - **Privacy Policy** — what data we collect, how it's stored, and your rights
 
 You can read both anytime from **Settings → About → Terms of Service / Privacy Policy**.
@@ -79,7 +79,7 @@ If we ever update the terms in a meaningful way, we'll let you know in the app.
 A few things worth knowing in plain language:
 
 - **You own your customer data.** Customer phone numbers, addresses, emails, and job details collected via the SMS bot live in your account only. We don't sell or share that data.
-- **Your phone number, SMS and voice minutes are included** in your TradieCatch subscription, up to a fair-use cap (1,000 SMS per month and 500 voice minutes per month). You won't get a separate Twilio bill. If your usage consistently goes over the cap we'll talk to you about a higher tier first — we won't silently bill you extra.
+- **Your phone number, SMS and voice minutes are included** in your CallCatch subscription, up to a fair-use cap (1,000 SMS per month and 500 voice minutes per month). You won't get a separate Twilio bill. If your usage consistently goes over the cap we'll talk to you about a higher tier first — we won't silently bill you extra.
 - **You're responsible for your messaging** under Australia's Spam Act 2003. Because the bot only replies to people who already called or texted you, you have inferred consent — but it's still your business and your responsibility.
 - **Voicemail audio is not stored on our servers.** Recordings live on the phone-system side and are streamed to you on demand when you tap the link in the app.
 - **Your password** is stored as a one-way encrypted hash. Even we can't see it. The temporary password we email you is replaced with one only you know on your first login.
@@ -153,7 +153,7 @@ Under each call you can see exactly where the automated conversation is up to:
 
 ### Manually Adding a Missed Call
 
-If someone called your personal number instead of your TradieCatch business number, you can log it manually:
+If someone called your personal number instead of your CallCatch business number, you can log it manually:
 
 1. Tap the **+** button in the top right
 2. Enter the caller's name and phone number
@@ -189,7 +189,7 @@ The conversation stays open. You can pick it up manually from the Calls tab — 
 
 ## 8. Service Area & Travel Radius
 
-This is one of the smartest features in TradieCatch — it stops the bot from booking jobs that are too far away to be worth your time.
+This is one of the smartest features in CallCatch — it stops the bot from booking jobs that are too far away to be worth your time.
 
 ### How It Works
 
@@ -260,7 +260,7 @@ Tap the filter buttons at the top to view:
 
 ## 10. The Settings Tab
 
-This is where you configure everything about how TradieCatch works. Sections are listed in the order they appear in the app:
+This is where you configure everything about how CallCatch works. Sections are listed in the order they appear in the app:
 
 ### Business
 
@@ -282,7 +282,7 @@ This is where you configure everything about how TradieCatch works. Sections are
 
 ### Your Business Phone Number
 
-A read-only display showing the dedicated business phone number TradieCatch is running on your behalf. There's nothing to configure here — if you ever need the number changed, contact us.
+A read-only display showing the dedicated business phone number CallCatch is running on your behalf. There's nothing to configure here — if you ever need the number changed, contact us.
 
 ### Voice Greeting
 
@@ -340,7 +340,7 @@ The services list is what the bot presents to callers when asking what they need
 
 ## 12. Booking Calendar Options
 
-TradieCatch gives you three ways to handle booking times in the SMS conversation.
+CallCatch gives you three ways to handle booking times in the SMS conversation.
 
 ### Option 1: Manual Time Slots (Default)
 
@@ -372,9 +372,9 @@ The bot sends a pre-filled Google Calendar link.
 
 ## 13. Voice Greeting & Voicemail
 
-When someone calls your TradieCatch business number, they hear a greeting first, followed by a short prompt: _"To leave a voicemail, press 1. Otherwise, just hang up and we'll text you shortly."_
+When someone calls your CallCatch business number, they hear a greeting first, followed by a short prompt: _"To leave a voicemail, press 1. Otherwise, just hang up and we'll text you shortly."_
 
-- If they **press 1**, they're recorded and the recording stays on the phone-system side. When you tap the voicemail link in the Calls tab, the audio is streamed to you on demand — nothing audio is stored on TradieCatch's servers.
+- If they **press 1**, they're recorded and the recording stays on the phone-system side. When you tap the voicemail link in the Calls tab, the audio is streamed to you on demand — nothing audio is stored on CallCatch's servers.
 - If they **don't press 1** (or just hang up), no voicemail is recorded. The SMS bot still kicks in and follows up with them.
 - Anything under 2 seconds (silent recordings, accidental presses) is dropped — you won't get a notification for empty voicemails.
 
@@ -407,7 +407,7 @@ When a caller has left a voicemail, the missed call card in the Calls tab shows 
 
 ## 14. Subscription & Billing
 
-TradieCatch uses Stripe for secure payment processing. The flow is intentionally simple:
+CallCatch uses Stripe for secure payment processing. The flow is intentionally simple:
 
 ### How Activation Works
 
@@ -437,11 +437,11 @@ There's no "pause" — only cancel. If you cancel, you keep access until the per
 
 ---
 
-## 15. Using TradieCatch on the Web
+## 15. Using CallCatch on the Web
 
-You don't need to download anything from an app store to get started. TradieCatch runs in any modern browser:
+You don't need to download anything from an app store to get started. CallCatch runs in any modern browser:
 
-1. Visit your TradieCatch URL on your phone, tablet, or computer
+1. Visit your CallCatch URL on your phone, tablet, or computer
 2. Sign in with the email and temporary password we sent you
 3. Use all the same features (calls, jobs, settings, voice greeting, SMS flow)
 
@@ -458,7 +458,7 @@ A: The messages are written to sound natural. Most customers simply reply and ge
 A: The bot handles common variations (e.g., "yes", "yeah", "yep" are all treated the same). If it can't understand a reply, it'll ask the question again. You can always step in manually by viewing the chat and sending your own message.
 
 **Q: Can I use my existing phone number?**
-A: TradieCatch needs to receive your calls on the dedicated business number we provision for you, because that's the number wired into our SMS and voice automation. The usual approach is to set up call forwarding from your existing number to your TradieCatch number, so customers can keep calling your normal number and the diverted calls hit our system.
+A: CallCatch needs to receive your calls on the dedicated business number we provision for you, because that's the number wired into our SMS and voice automation. The usual approach is to set up call forwarding from your existing number to your CallCatch number, so customers can keep calling your normal number and the diverted calls hit our system.
 
 **Q: What if the bot is halfway through a conversation when I want to take over?**
 A: Open the chat in the Calls tab and start typing — your manual messages go through alongside the bot. You can also book the job yourself using the Book button.
@@ -467,7 +467,7 @@ A: Open the chat in the Calls tab and start typing — your manual messages go t
 A: Yes — push notification when the bot books a job, and another one when an out-of-area enquiry comes in.
 
 **Q: Can I have more than one business number?**
-A: Each TradieCatch account is linked to one dedicated business number. If you need multiple numbers (e.g. separate for two trades), contact us and we'll sort a multi-number arrangement.
+A: Each CallCatch account is linked to one dedicated business number. If you need multiple numbers (e.g. separate for two trades), contact us and we'll sort a multi-number arrangement.
 
 **Q: What does "URGENT" mean on a call?**
 A: If the caller picked an urgent service type (e.g., "Power outage") and confirmed it's an emergency, the call is flagged so you can prioritise it.
@@ -479,7 +479,7 @@ A: The bot tells them politely that the address is outside your usual area and t
 A: Run through this short checklist:
 1. Your subscription is active (Settings → Subscription)
 2. Auto-Reply is turned ON in Settings
-3. Call forwarding from your normal mobile is pointing at the TradieCatch business number shown in Settings
+3. Call forwarding from your normal mobile is pointing at the CallCatch business number shown in Settings
 
 If those three are good and calls are still missing, contact us — the routing on our side is something we manage and we can check it for you.
 
@@ -490,4 +490,4 @@ A: Yes — Settings → Subscription → Manage → Cancel. You keep access unti
 A: From the Sign In screen (tappable links at the bottom), or anytime from Settings → About.
 
 **Q: Can I use this on Android and iPhone?**
-A: Yes — TradieCatch runs in a web browser on any device, and is being prepared for the iOS App Store. Android via the App Store is not currently supported on Replit, but the web app works perfectly on Android phones.
+A: Yes — CallCatch runs in a web browser on any device, and is being prepared for the iOS App Store. Android via the App Store is not currently supported on Replit, but the web app works perfectly on Android phones.

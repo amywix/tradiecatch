@@ -1,4 +1,4 @@
-// Brand palette: matches the TradieCatch logo — safety yellow on near-black.
+// Brand palette: matches the CallCatch logo — safety yellow on near-black.
 // `accentText` is the text colour you MUST use on top of `accent` (yellow) —
 // white-on-yellow fails contrast badly. Default to black-on-yellow.
 const Colors = {

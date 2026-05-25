@@ -12,7 +12,7 @@ export interface GeocodeResult extends LatLng {
 }
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const USER_AGENT = "TradieCatch/1.0 (support@tradiecatch.com)";
+const USER_AGENT = "CallCatch/1.0 (support@callcatch.com)";
 
 const cache = new Map<string, GeocodeResult | null>();
 

@@ -287,7 +287,7 @@ export default function CallsScreen() {
         }
         ListHeaderComponent={
           <View>
-            <Greeting businessName={settings.businessName || 'TradieCatch'} />
+            <Greeting businessName={settings.businessName || 'CallCatch'} />
             <KpiRow>
               <KpiTile label="Today's calls" value={todayCalls.length} icon="call-outline" tone="info" />
               <KpiTile label="Unreplied" value={unrepliedCount} icon="alert-circle-outline" tone={unrepliedCount > 0 ? 'warning' : 'success'} />

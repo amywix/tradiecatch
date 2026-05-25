@@ -269,7 +269,7 @@ export async function requireAuth(
   next();
 }
 
-export const ADMIN_EMAIL = "admin@tradiecatch.com";
+export const ADMIN_EMAIL = "admin@callcatch.com";
 export const DEMO_EMAIL = "demo";
 
 /**

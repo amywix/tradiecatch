@@ -27,21 +27,21 @@ export default function TermsOfServiceScreen() {
         <Text style={styles.updated}>Last updated: April 2026</Text>
 
         <Section title="1. Agreement to Terms">
-          By creating an account or using TradieCatch ("the Service", "we", "us", "our"), you agree
+          By creating an account or using CallCatch ("the Service", "we", "us", "our"), you agree
           to be bound by these Terms of Service. If you do not agree to these terms, do not use the
           Service. You must be at least 18 years old and operating a legitimate trade business to
-          use TradieCatch.
+          use CallCatch.
         </Section>
 
         <Section title="2. Description of the Service">
-          TradieCatch is a software-as-a-service platform that helps tradespeople manage missed
+          CallCatch is a software-as-a-service platform that helps tradespeople manage missed
           calls, automate SMS follow-ups with their customers, and book jobs. We provision and
           manage a dedicated business phone number for you and run the SMS and voice automation on
           your behalf — there is nothing for you to plug in or configure on the telephony side.
         </Section>
 
         <Section title="3. Your Account">
-          Your account is created for you by TradieCatch after you arrange a subscription with us. You will be issued a
+          Your account is created for you by CallCatch after you arrange a subscription with us. You will be issued a
           temporary password and prompted to change it on your first login. You are responsible for
           keeping your new password confidential and for all activity that occurs under your
           account. You agree to notify us immediately of any unauthorised use of your account.
@@ -91,9 +91,9 @@ export default function TermsOfServiceScreen() {
             talk to you first before changing your plan.
           </BulletItem>
           <BulletItem title="No telephony bill from us">
-            Outside of your TradieCatch subscription, you will not receive a separate bill from us
+            Outside of your CallCatch subscription, you will not receive a separate bill from us
             or from Twilio for normal usage within the cap. Any extra usage charges (if you opt
-            into a higher tier) will be invoiced through TradieCatch only.
+            into a higher tier) will be invoiced through CallCatch only.
           </BulletItem>
         </Section>
 
@@ -123,7 +123,7 @@ export default function TermsOfServiceScreen() {
         </Section>
 
         <Section title="7. Intellectual Property">
-          The TradieCatch app, branding, and underlying software are owned by us and protected by
+          The CallCatch app, branding, and underlying software are owned by us and protected by
           intellectual property laws. We grant you a limited, non-exclusive, non-transferable,
           revocable licence to use the Service for the operation of your trade business while your
           subscription is active.
@@ -146,7 +146,7 @@ export default function TermsOfServiceScreen() {
         </Section>
 
         <Section title="10. Limitation of Liability">
-          To the maximum extent permitted by law, TradieCatch will not be liable for any indirect,
+          To the maximum extent permitted by law, CallCatch will not be liable for any indirect,
           incidental, special, consequential or exemplary damages, including loss of profits, lost
           jobs, lost customers, or business interruption, arising out of or relating to your use
           of the Service. Where liability cannot be fully excluded, our total liability to you for
@@ -182,7 +182,7 @@ export default function TermsOfServiceScreen() {
 
         <Section title="15. Contact">
           Questions about these Terms? Contact us at:{'\n\n'}
-          <Text style={styles.contactEmail}>support@tradiecatch.com</Text>
+          <Text style={styles.contactEmail}>support@callcatch.com</Text>
         </Section>
 
         <Pressable style={styles.crossLink} onPress={() => router.push('/privacy-policy')}>

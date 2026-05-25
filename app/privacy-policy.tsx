@@ -27,7 +27,7 @@ export default function PrivacyPolicyScreen() {
         <Text style={styles.updated}>Last updated: March 2026</Text>
 
         <Section title="Overview">
-          TradieCatch ("we", "us", "our") is a mobile application for tradespeople to manage missed calls,
+          CallCatch ("we", "us", "our") is a mobile application for tradespeople to manage missed calls,
           automate SMS follow-ups, and book jobs. This Privacy Policy explains what data we collect, how we
           use it, and your rights regarding your information.
         </Section>
@@ -44,13 +44,13 @@ export default function PrivacyPolicyScreen() {
             service types, and appointment details collected via the automated SMS conversation.
           </BulletItem>
           <BulletItem title="Your dedicated business phone number">
-            TradieCatch provisions and operates a Twilio account on your behalf. Your dedicated
+            CallCatch provisions and operates a Twilio account on your behalf. Your dedicated
             business phone number is provisioned, paid for, and managed by us — you do not need
             your own Twilio account and we do not store any Twilio credentials on your behalf.
           </BulletItem>
           <BulletItem title="Voicemail recordings">
             Voicemails left by your callers are stored on Twilio's infrastructure. We do not retain
-            audio data on TradieCatch servers. When you tap a voicemail link in the app, the audio
+            audio data on CallCatch servers. When you tap a voicemail link in the app, the audio
             is streamed to you on demand from Twilio.
           </BulletItem>
           <BulletItem title="Billing information">
@@ -68,7 +68,7 @@ export default function PrivacyPolicyScreen() {
           <BulletItem title="SMS and voice sending">
             We use the Twilio account that we operate on your behalf to send automated SMS replies
             and play your voicemail greeting to callers. The dedicated business number is used only
-            for your TradieCatch account.
+            for your CallCatch account.
           </BulletItem>
           <BulletItem title="Job management">
             Call and job records are used to populate your Calls and Jobs tabs within the app.
@@ -95,7 +95,7 @@ export default function PrivacyPolicyScreen() {
         </Section>
 
         <Section title="Customer Data (Your Callers)">
-          As a TradieCatch user, you are responsible for ensuring that your use of the automated SMS
+          As a CallCatch user, you are responsible for ensuring that your use of the automated SMS
           system complies with applicable telecommunications laws in your country (e.g. the Spam Act
           2003 in Australia). Customers who reply to your SMS have initiated contact with you. Their
           data (name, phone, address, email) is stored only in your account and used only for the
@@ -118,7 +118,7 @@ export default function PrivacyPolicyScreen() {
         </Section>
 
         <Section title="Children's Privacy">
-          TradieCatch is intended for use by adults running trade businesses. We do not knowingly
+          CallCatch is intended for use by adults running trade businesses. We do not knowingly
           collect data from anyone under 18 years of age.
         </Section>
 
@@ -131,7 +131,7 @@ export default function PrivacyPolicyScreen() {
         <Section title="Contact Us">
           If you have any questions about this Privacy Policy or how we handle your data, please
           contact us at:{'\n\n'}
-          <Text style={styles.contactEmail}>support@tradiecatch.com</Text>
+          <Text style={styles.contactEmail}>support@callcatch.com</Text>
         </Section>
 
         <Pressable style={styles.crossLink} onPress={() => router.push('/terms-of-service')}>

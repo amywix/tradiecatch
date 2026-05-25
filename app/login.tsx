@@ -53,9 +53,9 @@ export default function LoginScreen() {
 
   const openSalesContact = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const url = 'mailto:hello@tradiecatch.com?subject=TradieCatch%20signup%20enquiry';
+    const url = 'mailto:hello@callcatch.com?subject=CallCatch%20signup%20enquiry';
     Linking.openURL(url).catch(() => {
-      Alert.alert('Get in touch', 'Email us at hello@tradiecatch.com to set up your account.');
+      Alert.alert('Get in touch', 'Email us at hello@callcatch.com to set up your account.');
     });
   };
 
@@ -123,7 +123,7 @@ export default function LoginScreen() {
               <Ionicons name="flash" size={28} color={Colors.accent} />
             </View>
             <Text style={styles.formTitle}>Welcome Back</Text>
-            <Text style={styles.formSubtitle}>Sign in to your TradieCatch account</Text>
+            <Text style={styles.formSubtitle}>Sign in to your CallCatch account</Text>
           </View>
 
           <View style={styles.inputGroup}>

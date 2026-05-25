@@ -14,8 +14,8 @@ fs.copyFileSync(path.join(ASSETS, 'icon-512.png'), path.join(WEB_BUILD, 'icon-51
 fs.copyFileSync(path.join(ASSETS, 'icon-512.png'), path.join(WEB_BUILD, 'apple-touch-icon.png'));
 
 const manifest = {
-  name: 'TradieCatch',
-  short_name: 'TradieCatch',
+  name: 'CallCatch',
+  short_name: 'CallCatch',
   description: 'Never miss a job from a missed call again.',
   start_url: '/',
   display: 'standalone',
@@ -41,7 +41,7 @@ const pwaHead = `
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="TradieCatch" />
+    <meta name="apple-mobile-web-app-title" content="CallCatch" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#1B2838" />`;
 

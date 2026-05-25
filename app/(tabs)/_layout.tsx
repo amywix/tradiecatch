@@ -128,7 +128,7 @@ export default function TabLayout() {
   // The admin operator and the demo account both bypass the paywall. The admin
   // never needs to pay; the demo needs to be visible to prospects without a
   // Stripe subscription so the guys can show how the app works.
-  const bypassPaywall = user?.email === 'admin@tradiecatch.com' || user?.email === 'demo';
+  const bypassPaywall = user?.email === 'admin@callcatch.com' || user?.email === 'demo';
 
   useEffect(() => {
     if (isLoading || subLoading || hasRedirected.current) return;

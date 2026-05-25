@@ -329,7 +329,7 @@ export default function JobsScreen() {
         }
         ListHeaderComponent={
           <View>
-            <Greeting businessName={settings.businessName || 'TradieCatch'} />
+            <Greeting businessName={settings.businessName || 'CallCatch'} />
             <KpiRow>
               <KpiTile label="Pending" value={pendingCount} icon="time-outline" tone="warning" />
               <KpiTile label="Confirmed" value={confirmedCount} icon="checkmark-circle-outline" tone="success" />
