@@ -391,6 +391,26 @@ export default function SettingsScreen() {
     }
   }, [editingMsgKey, editingMsgText, settings.conversationMessages, updateAppSettings]);
 
+  const handleDeleteCustomMsg = useCallback(async (key: string) => {
+    const info = MSG_LABELS[key];
+    const label = info?.label || key;
+    const doDelete = async () => {
+      const stored = { ...(settings.conversationMessages || {}) };
+      delete stored[key];
+      await updateAppSettings({ conversationMessages: stored });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    };
+    if (Platform.OS === 'web') {
+      const ok = window.confirm(`Delete your custom "${label}" and restore the default text?`);
+      if (ok) await doDelete();
+      return;
+    }
+    Alert.alert('Delete Customisation', `Delete your custom "${label}" and restore the default text?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: doDelete },
+    ]);
+  }, [settings.conversationMessages, updateAppSettings]);
+
   const handleResetMsg = useCallback(async () => {
     if (!editingMsgKey) return;
     Alert.alert('Reset to Default', 'Restore this message to the original default text?', [
@@ -976,7 +996,18 @@ export default function SettingsScreen() {
                         {currentMsgs[key].replace(/\{[^}]+\}/g, '…').replace(/\n/g, ' ').trim()}
                       </Text>
                     </View>
-                    <Feather name="edit-2" size={16} color={Colors.textTertiary} />
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                      {isCustomised && (
+                        <Pressable
+                          onPress={(e) => { e.stopPropagation?.(); handleDeleteCustomMsg(key); }}
+                          hitSlop={10}
+                          testID={`delete-msg-${key}`}
+                        >
+                          <Feather name="trash-2" size={16} color={Colors.danger} />
+                        </Pressable>
+                      )}
+                      <Feather name="edit-2" size={16} color={Colors.textTertiary} />
+                    </View>
                   </Pressable>
                   {idx < arr.length - 1 && <View style={styles.flowDivider} />}
                 </React.Fragment>
