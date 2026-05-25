@@ -249,6 +249,32 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
   }
 
   if (!call) {
+    // No prior missed call from this number. If the text was sent TO a known
+    // tradie business number, treat the inbound text itself as the initial
+    // trigger — create a record and kick off the conversation flow exactly
+    // as if they had called and hung up.
+    if (userIds.length > 0) {
+      const ownerId = userIds[0];
+      console.log(`Inbound SMS trigger: new contact ${fromPhone} → user ${ownerId}`);
+
+      const [newCall] = await db.insert(missedCalls).values({
+        userId: ownerId,
+        callerName: "Unknown",
+        phoneNumber: normalizedPhone,
+        replied: false,
+        conversationState: "none",
+        conversationLog: [
+          { role: "customer", message: body.trim(), timestamp: new Date().toISOString() },
+        ] as any,
+      }).returning();
+
+      // Fire the standard missed-call greeting; this also advances the
+      // conversation state to "awaiting_name" so the next inbound reply
+      // continues the flow normally.
+      await sendInitialMissedCallSms(newCall.id, ownerId, 'missed_call');
+      return null;
+    }
+
     console.log(`No matching call found for phone: "${fromPhone}" (normalized: "${normalizedPhone}")`);
     return null;
   }
