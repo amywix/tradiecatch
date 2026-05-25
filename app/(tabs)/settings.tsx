@@ -569,7 +569,21 @@ export default function SettingsScreen() {
 
   const handleDeleteService = useCallback(async (idx: number) => {
     if (services.length <= 1) {
-      Alert.alert("Can't Remove", "You need at least one service.");
+      if (Platform.OS === 'web') {
+        window.alert("You need at least one service.");
+      } else {
+        Alert.alert("Can't Remove", "You need at least one service.");
+      }
+      return;
+    }
+    const doRemove = async () => {
+      const updated = services.filter((_, i) => i !== idx);
+      await updateServices(updated);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    };
+    if (Platform.OS === 'web') {
+      const ok = window.confirm(`Remove "${services[idx]}" from your services?`);
+      if (ok) await doRemove();
       return;
     }
     Alert.alert(
@@ -577,15 +591,7 @@ export default function SettingsScreen() {
       `Remove "${services[idx]}" from your services?`,
       [
         { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            const updated = services.filter((_, i) => i !== idx);
-            await updateServices(updated);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          },
-        },
+        { text: 'Remove', style: 'destructive', onPress: doRemove },
       ]
     );
   }, [services, updateServices]);
