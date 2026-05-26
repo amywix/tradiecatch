@@ -396,6 +396,22 @@ async function bootstrapDefaultUser() {
       log('Bootstrap: backfilled Twilio details on admin settings');
     }
 
+    // One-shot services migration: swap legacy "Lights not working" for
+    // "Snap Chat Call" so option 3 routes to the paid-service flow. Preserves
+    // any other customisations the operator has made to their list.
+    if (adminSettings) {
+      const currentServices = (adminSettings.services as string[]) || [];
+      const legacyIdx = currentServices.findIndex(s => s.toLowerCase() === "lights not working");
+      const alreadyHasSnap = currentServices.some(s => s.toLowerCase() === "snap chat call");
+      if (legacyIdx !== -1 && !alreadyHasSnap) {
+        const updated = [...currentServices];
+        updated[legacyIdx] = "Snap Chat Call";
+        await db.update(settings).set({ services: updated }).where(eq(settings.userId, admin.id));
+        adminSettings = (await db.select().from(settings).where(eq(settings.userId, admin.id)))[0];
+        log('Bootstrap: replaced "Lights not working" with "Snap Chat Call" in admin services');
+      }
+    }
+
     // Ensure the demo account exists. It mirrors the admin's settings (so the
     // guys see a populated app) but is read-only — server-side blockDemo
     // middleware refuses any state-changing call, and the Settings tab is

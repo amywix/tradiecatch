@@ -1,6 +1,6 @@
 import twilio from "twilio";
 import { db } from "./db";
-import { missedCalls, jobs, settings, DEFAULT_SERVICES, DEFAULT_CONVERSATION_MESSAGES } from "@shared/schema";
+import { missedCalls, jobs, settings, DEFAULT_SERVICES, DEFAULT_CONVERSATION_MESSAGES, PAID_SERVICES } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { sendPushToUser } from "./push";
 
@@ -312,7 +312,28 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         updates.selectedService = service;
         const serviceLower = service.toLowerCase();
 
-        if (serviceLower.includes("urgent") || serviceLower.includes("emergency") || serviceLower.includes("power outage")) {
+        // Paid services skip the address + booking flow entirely. Send the
+        // Stripe payment link and a short follow-up note, then end the
+        // conversation. No job row is created — the operator handles
+        // follow-up out-of-band after payment lands.
+        const paidConfig = PAID_SERVICES.find(p => p.match(serviceLower));
+        if (paidConfig) {
+          const { businessName } = await getTwilioConfig(callUserId);
+          response = `${service} — sorted.\n\nPayment link: ${paidConfig.paymentLink}\n\n${paidConfig.followUpNote}\n\n- ${businessName || "The team"}`;
+          newState = "completed";
+          updates.selectedTime = "Payment link sent";
+          updates.jobBooked = false;
+          try {
+            sendPushToUser(
+              callUserId,
+              "💳 Payment link sent",
+              `${call.callerName || updates.callerName || "Customer"} — ${service}. Awaiting payment.`,
+              { type: "paid_service", missedCallId: call.id }
+            );
+          } catch (notifErr) {
+            console.error("Paid-service push notify failed:", notifErr);
+          }
+        } else if (serviceLower.includes("urgent") || serviceLower.includes("emergency") || serviceLower.includes("power outage")) {
           response = `Thanks for letting us know.\nIs this an emergency right now?\n\nReply YES if urgent or NO if it can wait.\n\nIf urgent, we'll prioritise your job immediately.`;
           newState = "awaiting_urgency";
         } else if (serviceLower === "other") {

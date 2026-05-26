@@ -68,11 +68,27 @@ export const jobs = pgTable("jobs", {
 export const DEFAULT_SERVICES = [
   "Power point install / repair",
   "Ceiling fan install",
-  "Lights not working",
+  "Snap Chat Call",
   "Switchboard issue",
   "Power outage / urgent fault",
   "Smoke alarm install",
   "Other",
+];
+
+// Services that bypass the address/booking flow and instead send a Stripe
+// payment link. After payment, the operator follows up out-of-band (e.g. via
+// Snapchat). The matcher receives the lower-cased service name; first
+// matching entry wins.
+export const PAID_SERVICES: Array<{
+  match: (serviceLower: string) => boolean;
+  paymentLink: string;
+  followUpNote: string;
+}> = [
+  {
+    match: (s) => s.includes("snapchat") || s.includes("snap chat"),
+    paymentLink: "https://buy.stripe.com/fZu6oHbhrgJZcRv9CPa7C04",
+    followUpNote: "Once payment lands I'll call you on Snapchat.",
+  },
 ];
 
 export const DEFAULT_CONVERSATION_MESSAGES: Record<string, string> = {
