@@ -406,15 +406,8 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         console.error("Service-area check failed (continuing booking flow):", err);
       }
 
-      response = fillTemplate(msgs.email_request, {});
-      newState = "awaiting_email";
-      break;
-    }
-
-    case "awaiting_email": {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (emailRegex.test(reply)) {
-        updates.callerEmail = reply.toLowerCase();
+      // Email step removed — go straight from address to booking/time.
+      {
         const booking = await getBookingConfig(callUserId);
         if (booking.enabled && booking.externalLink) {
           const { businessName } = await getTwilioConfig(callUserId);
@@ -433,9 +426,31 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
           response = fillTemplate(msgs.time_preference, {});
           newState = "awaiting_time";
         }
+      }
+      break;
+    }
+
+    case "awaiting_email": {
+      // Legacy state for in-flight conversations started before the email step
+      // was removed. Treat any inbound reply as a no-op transition into the
+      // booking flow so the customer isn't stuck.
+      const booking = await getBookingConfig(callUserId);
+      if (booking.enabled && booking.externalLink) {
+        const { businessName } = await getTwilioConfig(callUserId);
+        const providerName = booking.provider === "calendly" ? "Calendly" : "Google Calendar";
+        const urgentNote = (call.isUrgent || updates.isUrgent) ? "\n\nMarked as urgent — we'll prioritise this." : "";
+        response = fillTemplate(msgs.booked_link, { link: booking.externalLink, urgentNote, businessName });
+        newState = "completed";
+        updates.selectedTime = `Booking link sent (${providerName})`;
+        updates.jobBooked = false;
+      } else if (booking.enabled) {
+        const dates = resolveBookingDates(booking.dates);
+        const dateMenu = dates.map((d, i) => `${i + 1}. ${d.label}`).join("\n");
+        response = `Thanks! What day works best for you?\n\n${dateMenu}`;
+        newState = "awaiting_booking_date";
       } else {
-        response = `That doesn't look like a valid email. Could you double-check and send it again?`;
-        newState = "awaiting_email";
+        response = fillTemplate(msgs.time_preference, {});
+        newState = "awaiting_time";
       }
       break;
     }

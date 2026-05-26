@@ -1028,7 +1028,7 @@ async function handleMissedCallAndRespond(
   // Falls back automatically to text-to-speech if no custom recording is stored.
   const greetingTwiml = recordingUrl
     ? `<Play>${recordingUrl}</Play>`
-    : `<Say voice="Polly.Olivia-Neural">${voiceMessage} Thanks for calling ${businessName}.</Say>`;
+    : `<Say voice="Polly.Olivia-Neural">${voiceMessage}</Say>`;
 
   if (voicemailEnabled && missedCallId) {
     // IVR: caller hears the greeting, then is prompted to press 1 if they
