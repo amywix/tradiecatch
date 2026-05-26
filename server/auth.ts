@@ -119,8 +119,15 @@ export async function login(req: Request, res: Response) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
+  const normalisedEmail = email.toLowerCase().trim();
+
+  // Demo logon is disabled.
+  if (normalisedEmail === "demo") {
+    return res.status(401).json({ error: "Invalid email or password" });
+  }
+
   try {
-    const [user] = await db.select().from(users).where(eq(users.email, email.toLowerCase().trim()));
+    const [user] = await db.select().from(users).where(eq(users.email, normalisedEmail));
 
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
