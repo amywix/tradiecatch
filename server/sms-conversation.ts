@@ -319,7 +319,12 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         const paidConfig = PAID_SERVICES.find(p => p.match(serviceLower));
         if (paidConfig) {
           const { businessName } = await getTwilioConfig(callUserId);
-          response = `${service} — sorted.\n\nPayment link: ${paidConfig.paymentLink}\n\n${paidConfig.followUpNote}\n\n- ${businessName || "The team"}`;
+          response = fillTemplate(msgs.paid_service_response, {
+            service,
+            paymentLink: paidConfig.paymentLink,
+            followUpNote: paidConfig.followUpNote,
+            businessName: businessName || "The team",
+          });
           newState = "completed";
           updates.selectedTime = "Payment link sent";
           updates.jobBooked = false;
@@ -334,10 +339,10 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
             console.error("Paid-service push notify failed:", notifErr);
           }
         } else if (serviceLower.includes("urgent") || serviceLower.includes("emergency") || serviceLower.includes("power outage")) {
-          response = `Thanks for letting us know.\nIs this an emergency right now?\n\nReply YES if urgent or NO if it can wait.\n\nIf urgent, we'll prioritise your job immediately.`;
+          response = fillTemplate(msgs.urgency_prompt, { service });
           newState = "awaiting_urgency";
         } else if (serviceLower === "other") {
-          response = `No worries! Please type a brief description of what you need help with and we'll get back to you.`;
+          response = fillTemplate(msgs.other_prompt, {});
           newState = "awaiting_other_description";
         } else {
           response = fillTemplate(msgs.address_request, { service });
@@ -345,7 +350,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         }
       } else {
         const menuText = buildServicesMenuText(servicesList);
-        response = `Sorry, I didn't catch that. Please reply with a number from 1-${maxChoice}:\n\n${menuText}`;
+        response = fillTemplate(msgs.service_retry, { count: String(maxChoice), menu: menuText });
         newState = "awaiting_service";
       }
       break;
@@ -369,14 +374,14 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
       const upper = reply.toUpperCase();
       if (upper.includes("YES") || upper.includes("URGENT") || upper.includes("ASAP")) {
         updates.isUrgent = true;
-        response = `We're treating this as urgent. Our team will call you ASAP.\n\nWhat's the address so we can head your way?`;
+        response = fillTemplate(msgs.urgency_yes, { service: call.selectedService || "your job" });
         newState = "awaiting_address";
       } else if (upper.includes("NO") || upper.includes("WAIT") || upper.includes("LATER")) {
         updates.isUrgent = false;
         response = fillTemplate(msgs.address_request, { service: call.selectedService || "your job" });
         newState = "awaiting_address";
       } else {
-        response = `Please reply YES if this is urgent, or NO if it can wait.`;
+        response = fillTemplate(msgs.urgency_retry, {});
         newState = "awaiting_urgency";
       }
       break;
@@ -400,10 +405,11 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         if (area.configured && area.geocoded && !area.within) {
           const { businessName } = await getTwilioConfig(callUserId);
           const distanceLabel = area.distanceKm != null ? ` (about ${Math.round(area.distanceKm)}km away)` : "";
-          response =
-            `Thanks for the address${distanceLabel}. That's outside our usual service area, ` +
-            `so we can't auto-book this one. We've passed your details to the electrician — ` +
-            `they'll review and get back to you directly.\n\n- ${businessName || "The team"}`;
+          response = fillTemplate(msgs.out_of_area, {
+            distance: distanceLabel,
+            businessName: businessName || "The team",
+            service: call.selectedService || updates.selectedService || "your job",
+          });
           newState = "completed";
           updates.jobBooked = false;
           updates.selectedTime = "Out of service area — manual review";
@@ -441,7 +447,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         } else if (booking.enabled) {
           const dates = resolveBookingDates(booking.dates);
           const dateMenu = dates.map((d, i) => `${i + 1}. ${d.label}`).join("\n");
-          response = `Thanks! What day works best for you?\n\n${dateMenu}`;
+          response = fillTemplate(msgs.booking_date_intro, { menu: dateMenu });
           newState = "awaiting_booking_date";
         } else {
           response = fillTemplate(msgs.time_preference, {});
@@ -467,7 +473,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
       } else if (booking.enabled) {
         const dates = resolveBookingDates(booking.dates);
         const dateMenu = dates.map((d, i) => `${i + 1}. ${d.label}`).join("\n");
-        response = `Thanks! What day works best for you?\n\n${dateMenu}`;
+        response = fillTemplate(msgs.booking_date_intro, { menu: dateMenu });
         newState = "awaiting_booking_date";
       } else {
         response = fillTemplate(msgs.time_preference, {});
@@ -485,11 +491,11 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
       if (idx >= 0 && idx < dates.length) {
         updates.selectedTime = dates[idx].label;
         const slotMenu = booking.slots.map((s, i) => `${i + 1}. ${s}`).join("\n");
-        response = `Great, ${dates[idx].label}!\n\nWhat time suits you?\n\n${slotMenu}`;
+        response = fillTemplate(msgs.booking_slot_intro, { date: dates[idx].label, menu: slotMenu });
         newState = "awaiting_booking_slot";
       } else {
         const dateMenu = dates.map((d, i) => `${i + 1}. ${d.label}`).join("\n");
-        response = `Please reply with a number from 1-${dates.length}:\n\n${dateMenu}`;
+        response = fillTemplate(msgs.booking_date_retry, { count: String(dates.length), menu: dateMenu });
         newState = "awaiting_booking_date";
       }
       break;
@@ -539,7 +545,7 @@ export async function handleIncomingReply(fromPhone: string, body: string, toPho
         updates.jobBooked = true;
       } else {
         const slotMenu = booking.slots.map((s, i) => `${i + 1}. ${s}`).join("\n");
-        response = `Please reply with a number from 1-${booking.slots.length}:\n\n${slotMenu}`;
+        response = fillTemplate(msgs.booking_slot_retry, { count: String(booking.slots.length), menu: slotMenu });
         newState = "awaiting_booking_slot";
       }
       break;
